@@ -7,13 +7,13 @@ export class User {
     @PrimaryGeneratedColumn()
     userId: number
 
-    @Column({default: 0})
+    @Column({ default: 0 })
     exp: number
 
-    @Column({default: 0})
+    @Column({ default: 0 })
     points: number
 
-    @Column()
+    @Column({ unique: true })
     phoneNumber: string
 
     @Exclude()
