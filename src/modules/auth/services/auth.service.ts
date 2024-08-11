@@ -4,10 +4,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RequestCodeDto } from '../dto/request-code.dto';
 import { AuthenticateDto } from '../dto/authenticate.dto';
-import { VerificationCode } from 'src/auth/entities/verification-code.entity';
-import { SmsService } from 'src/sms/services/sms.service';
 import { JwtService } from '@nestjs/jwt';
-import { UserSerivce } from 'src/user/services/user.service';
+import { VerificationCode } from '@/modules/auth/entities/verification-code.entity';
+import { SmsService } from '@/modules/sms/services/sms.service';
+import { UserSerivce } from '@/modules/user/services/user.service';
 import { InvalidVerificationCodeException } from '../exceptions/InvalidVerificationCodeException';
 import { ExpiredVerificationCodeException } from '../exceptions/ExpiredVerificationCodeException';
 
