@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { Repository } from "typeorm";
 import { User } from "../entities/user.entity";
 import { InjectRepository } from "@nestjs/typeorm";
+import { Transactional } from "typeorm-transactional";
 
 @Injectable()
 export class UserSerivce {
@@ -10,6 +11,7 @@ export class UserSerivce {
         private readonly userRepository: Repository<User>
     ) { }
 
+    @Transactional()
     async getUserOrCreate(phoneNumber: string) {
         const user = await this.userRepository.findOne({
             where: { phoneNumber }
@@ -19,8 +21,6 @@ export class UserSerivce {
 
         return await this.userRepository.save({
             phoneNumber,
-            exp: 0,
-            points: 0
         })
     }
 

@@ -1,8 +1,9 @@
-import { IsMobilePhone } from "class-validator";
+import { IsString } from "class-validator";
 
 export class AuthenticateDto {
-    @IsMobilePhone("ko-KR")
-    phoneNumber: string
+    @IsString()
+    token: string
 
+    @IsString()
     code: string
 }
