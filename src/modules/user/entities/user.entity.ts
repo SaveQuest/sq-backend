@@ -7,10 +7,10 @@ export class User {
     @PrimaryGeneratedColumn()
     userId: number
 
-    @Column()
+    @Column({default: 0})
     exp: number
 
-    @Column()
+    @Column({default: 0})
     points: number
 
     @Column()

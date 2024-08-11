@@ -7,6 +7,7 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 dotenv.config();
 const env = envSchema.parse(process.env)
 
+const isDev = env.NODE_ENV === "development"
 export const configs: PostgresConnectionOptions = {
     type: 'postgres',
 
@@ -17,9 +18,9 @@ export const configs: PostgresConnectionOptions = {
     database: env.DATABASE_NAME,
 
     migrationsRun: false,
-    dropSchema: false,
+    dropSchema: isDev,
     
-    synchronize: env.NODE_ENV === "development",
+    synchronize: isDev,
     
     migrations: [__dirname + '/migrations/*.{ts,js}'],
     entities: [__dirname + '/**/*.entity.{ts,js}'],

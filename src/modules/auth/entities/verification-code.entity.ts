@@ -6,6 +6,9 @@ export class VerificationCode {
     phoneNumber: string
 
     @Column()
+    token: string
+
+    @Column()
     code: string
 
     @Column({type:"timestamptz"})
