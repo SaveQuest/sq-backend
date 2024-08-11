@@ -1,6 +1,6 @@
-import { IsMobilePhone } from "class-validator";
+import { Matches } from "class-validator";
 
 export class RequestCodeDto {
-    @IsMobilePhone("ko-KR")
+    @Matches(/^010\d{8}$/)
     phoneNumber: string
 }
