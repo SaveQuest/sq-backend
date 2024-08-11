@@ -2,10 +2,10 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { envValidator } from './configuration/env.validation';
-import { UserModule } from './user/user.module';
-import { AuthModule } from './auth/auth.module';
-import { SmsModule } from './sms/sms.module';
+import { envValidator } from './config/env.validator';
+import { UserModule } from './modules/user/user.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { SmsModule } from './modules/sms/sms.module';
 import dataSource from './ormconfig';
 
 @Module({

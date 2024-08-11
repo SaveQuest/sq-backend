@@ -1,7 +1,7 @@
 import { DataSource } from 'typeorm';
 import * as dotenv from 'dotenv';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
-import { envSchema } from './configuration/env.validation';
+import { envSchema } from './config/env.validator';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 dotenv.config();
