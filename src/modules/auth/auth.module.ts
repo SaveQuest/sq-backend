@@ -5,10 +5,10 @@ import { AuthGuard } from './guards/auth.guard';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 
-import { SmsModule } from 'src/sms/sms.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { VerificationCode } from './entities/verification-code.entity';
-import { UserModule } from 'src/user/user.module';
+import { UserModule } from '@/modules/user/user.module';
+import { SmsModule } from '@/modules/sms/sms.module';
 
 @Module({
   imports: [
