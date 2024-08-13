@@ -3,7 +3,7 @@ import { Column, Entity, PrimaryColumn } from "typeorm";
 @Entity()
 export class VerificationCode {
     @PrimaryColumn()
-    token: string
+    uuid: string
     
     @Column()
     phoneNumber: string
