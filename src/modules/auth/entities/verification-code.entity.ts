@@ -3,10 +3,10 @@ import { Column, Entity, PrimaryColumn } from "typeorm";
 @Entity()
 export class VerificationCode {
     @PrimaryColumn()
-    phoneNumber: string
-
-    @Column()
     token: string
+    
+    @Column()
+    phoneNumber: string
 
     @Column()
     code: string
