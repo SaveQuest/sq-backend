@@ -24,19 +24,19 @@ export class AuthService {
     async requestCode({ phoneNumber }: RequestCodeDto) {
         const code = this.generateCode()
         const expiredAt = dayjs().add(30, "minutes").toDate()
-        const token = crypto.randomUUID()
+        const uuid = crypto.randomUUID()
 
         await this.sendVerificationCode(phoneNumber, code)
-        await this.saveVerificationCode(phoneNumber, code, token, expiredAt)
+        await this.saveVerificationCode(phoneNumber, code, uuid, expiredAt)
 
-        return { phoneNumber, token, expiredAt }
+        return { phoneNumber, uuid, expiredAt }
     }
 
-    async authenticate({ token, code }: AuthenticateDto) {
-        const verificationCode = await this.verifyCode(token, code);
+    async authenticate({ uuid, code }: AuthenticateDto) {
+        const verificationCode = await this.verifyCode(uuid, code);
         await this.verificationCodeRepository.remove(verificationCode)
 
-        const user = await this.userService.getUserOrCreate(token)
+        const user = await this.userService.getUserOrCreate(uuid)
         const accessToken = this.generateToken(user.userId)
 
         return { accessToken }
@@ -47,9 +47,9 @@ export class AuthService {
         await this.smsService.sendSMS(phoneNumber, message)
     }
 
-    private async verifyCode(token: string, code: string): Promise<VerificationCode> {
+    private async verifyCode(uuid: string, code: string): Promise<VerificationCode> {
         const verificationCode = await this.verificationCodeRepository.findOne({
-            where: { token }
+            where: { uuid }
         });
 
         if (!verificationCode || verificationCode.code !== code) {
@@ -67,9 +67,9 @@ export class AuthService {
         return this.jwtService.sign({ userId });
     }
 
-    private async saveVerificationCode(phoneNumber: string, code: string, token: string, expiredAt: Date): Promise<void> {
+    private async saveVerificationCode(phoneNumber: string, code: string, uuid: string, expiredAt: Date): Promise<void> {
         await this.verificationCodeRepository.insert({
-            code, phoneNumber, token, expiredAt
+            code, phoneNumber, uuid, expiredAt
         });
     }
 
