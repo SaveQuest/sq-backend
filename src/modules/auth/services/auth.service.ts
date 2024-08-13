@@ -68,7 +68,7 @@ export class AuthService {
     }
 
     private async saveVerificationCode(phoneNumber: string, code: string, token: string, expiredAt: Date): Promise<void> {
-        await this.verificationCodeRepository.save({
+        await this.verificationCodeRepository.insert({
             code, phoneNumber, token, expiredAt
         });
     }
