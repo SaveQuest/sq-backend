@@ -25,7 +25,8 @@ export const configs: PostgresConnectionOptions = {
     migrations: [__dirname + '/migrations/*.{ts,js}'],
     entities: [__dirname + '/**/*.entity.{ts,js}'],
     
-    namingStrategy: new SnakeNamingStrategy()
+    namingStrategy: new SnakeNamingStrategy(),
+    logging: isDev
 };
 
 const dataSource = new DataSource(configs);
