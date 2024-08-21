@@ -6,10 +6,10 @@ app.use(express.json());
 
 // const { Client } = require("pg");
 // const dbClient = new Client({
-//     user: "postgres",
-//     host: "158.214.2",
-//     database: "postgres",
-//     password: "****",
+//     user: "DB 유저아이디",
+//     host: "DB 아이피",
+//     database: "DB 이름",
+//     password: "DB 비번",
 //     port: 5432
 // });
 
@@ -44,7 +44,7 @@ app.listen(8000, () => {
 
 
 // 회원가입
-app.get('/signIn/:id/:pwd', function(req, res){ 
+app.get('/signIn/:id/:pwd/:kakaoAcc', function(req, res){ 
     // 회원가입 처리 로직
     
     try {
@@ -78,8 +78,14 @@ app.get('/logIn/:id/:pwd', function (req, res) {
                 res.status(500).json({ isSucceed: false, });
             } else {
                 if(result.rows[0].count == 1){
-                    // 로그인 성공여부
-                    res.status(200).json({ isSucceed: true});
+                   
+                    // 로그인 후 데이터 반환
+                    dbClient.query(`SELECT {}, {}, {}, {}, {}, {}, {}, {} TOP(3) FROM users WHERE [id] = '${params.id}' AND [pwd] = '${params.pwd}'`, (err, ans) =>{
+                        res.json({
+
+                        }) ;
+                    });
+                    
                 }
                 else{
                     res.status(200).json({ isSucceed: false});
@@ -99,16 +105,15 @@ app.get('/logIn/:id/:pwd', function (req, res) {
 // 홈화면 
 // 오늘의 사용량, 어제 사용량, 레벨, 성공한 도전과제, 앱 설치후 평균 절약 금액, 도전과제 3개
 
-app.get('/home', function (req, res) {
+app.get('/home/:id/:pwd', function (req, res) {
     try {
         var params = req.params;
     
-        dbClient.query(`QUERY`, (error, result) => {
+        dbClient.query(`SELECT {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE [id] = '${params.id}' AND [pwd] = '${params.pwd}'`, (err, ans) =>{
             if (error) {
-                res.status(500).json({ isSucceed: false });
+                res.status(500).json({ isSucceed: "화면을 가져오는중 문제가 발생하였습니다." });
             } else {
-                let countValue = result.rows[0].count;
-                res.status(200).json({ isSucceed: countValue == 1 });
+                   
             }
         });
     } catch (error) {
@@ -129,12 +134,11 @@ app.get('/analyze', function (req, res) {
     try {
         var params = req.params;
     
-        dbClient.query(`QUERY`, (error, result) => {
+        dbClient.query(`SELECT {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE [id] = '${params.id}' AND [pwd] = '${params.pwd}'`, (err, ans) =>{
             if (error) {
-                res.status(500).json({ isSucceed: false });
+                res.status(500).json({ isSucceed: "화면을 가져오는중 문제가 발생하였습니다." });
             } else {
-                let countValue = result.rows[0].count;
-                res.status(200).json({ isSucceed: countValue == 1 });
+                   
             }
         });
     } catch (error) {
