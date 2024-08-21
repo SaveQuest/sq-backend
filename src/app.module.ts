@@ -10,6 +10,7 @@ import dataSource from './ormconfig';
 
 import { DataSource } from 'typeorm';
 import { addTransactionalDataSource } from 'typeorm-transactional';
+import { SeedingModule } from './modules/seeding/seeding.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -27,8 +28,11 @@ import { addTransactionalDataSource } from 'typeorm-transactional';
   }),
     UserModule,
     AuthModule,
-    SmsModule,],
+    SmsModule,
+    SeedingModule,
+  ],
   controllers: [],
 })
+
 
 export class AppModule { }
