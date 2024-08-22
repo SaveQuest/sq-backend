@@ -12,4 +12,9 @@ export class UserController {
     async me(@Request() req: IncomingMessage) {
         return await this.userService.findUserById(req.userId)
     }
+
+    @Get("getIdentity")
+    async getIdentity(@Request() req: IncomingMessage){
+        return await this.userService.insertUser()
+    }
 }
