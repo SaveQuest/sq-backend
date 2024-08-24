@@ -1,6 +1,6 @@
 import { Controller, Get, Request } from '@nestjs/common';
 import { MileageService  } from '../service/mileage.serviece';
-import { IncomingMessage } from 'http';
+import { usedAmount } from 'http';
 
 @Controller('mileage')
 export class MileageController {
@@ -9,7 +9,7 @@ export class MileageController {
     ) {}
 
     @Get("stackMileage")
-    async stackMileage(@Request() req: IncomingMessage) {
-        return await this.mileageservice.insertMileageByUsers(req.userId)
+    async stackMileage(@Request() req: usedAmount) {
+        return await this.mileageservice.insertMileageByUsers(req.userId, req.amount, req.content, req.date)
     }
 }
