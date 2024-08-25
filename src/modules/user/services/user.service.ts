@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+ import { Injectable } from "@nestjs/common";
 import { Repository } from "typeorm";
 import { User } from "../entities/user.entity";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -26,5 +26,9 @@ export class UserSerivce {
 
     findUserById(userId: number) {
         return this.userRepository.findOne({ where: { userId } })
+    }
+
+    insertUser(){
+        //return this.
     }
 }
