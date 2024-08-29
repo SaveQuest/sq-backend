@@ -8,9 +8,6 @@ export class Mileage {
     @Column()
     amount: number;
 
-    @Column({ default: "" })
-    content: string;
-
     @Exclude()
     @CreateDateColumn({ type: "timestamptz" })
     spend_at: Date;

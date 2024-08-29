@@ -6,7 +6,6 @@ import { usedAmount } from 'http';
 interface UsedAmount {
     userId: number;
     amount: number;
-    content: string;
     date: Date;
     cardIssuer: 'hanacard' | 'kbcard' | 'worricard' | 'bccard' | 'lottecard' | 'kakaomini' | 'tossuss';
     approvalTime: number;
@@ -29,7 +28,6 @@ export class MileageController {
         const {
             userId,
             amount,
-            content,
             date,
             cardIssuer,
             approvalTime,
@@ -43,7 +41,6 @@ export class MileageController {
         return await this.mileageService.insertMileageByUsers(
             userId,
             amount,
-            content,
             date,
             cardIssuer,
             approvalTime,

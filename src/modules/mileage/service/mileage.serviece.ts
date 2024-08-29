@@ -23,7 +23,6 @@ export class MileageService {
     async insertMileageByUsers(
         userId: number, 
         amount: number, 
-        usedContent: string, 
         date: Date,
         cardIssuer: 'hanacard' | 'kbcard' | 'worricard' | 'bccard' | 'lottecard' | 'kakaomini' | 'tossuss', 
         approvalTime: number,
@@ -42,7 +41,6 @@ export class MileageService {
         // 새로운 마일리지 엔티티 생성
         const newMileage = new Mileage();
         newMileage.userId = user;  // User 엔티티와 연결
-        newMileage.content = usedContent;  // 사용 내역
         newMileage.spend_at = date;  // 사용 날짜
         newMileage.amount = amount;  // 결제 금액
 
