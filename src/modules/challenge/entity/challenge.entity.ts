@@ -1,30 +1,32 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
-import { Exclude } from "class-transformer";
+import { User } from "@/modules/user/entities/user.entity";
+import { Column, CreateDateColumn, Entity, ManyToMany, PrimaryGeneratedColumn, JoinTable } from "typeorm";
 
 @Entity()
 export class Challenge {
-    @Exclude()
     @PrimaryGeneratedColumn()
-    id: number;
+    challengeId: number;
 
+    // 챌린지 제목
     @Column()
-    name: string;
+    title: string;
 
+    // 챌린지 참가비
     @Column()
-    description: string;
+    entryFee: number;
 
-    @Column('int')
-    targetUsage: number;
-
+    // 우승 상금
     @Column()
-    category: string;
+    prize: number;
 
-    @Column()
-    reward: string;
+    // 챌린지 종료 날짜
+    @Column({ type: "timestamptz" })
+    endDate: Date;
 
-    @Column({ type: 'timestamptz' })
-    deadline: Date;
+    // 챌린지 참가자들 (ManyToMany 관계)
+    @ManyToMany(() => User)
+    @JoinTable()
+    participants: User[];
 
-    @CreateDateColumn({ type: 'timestamptz' })
+    @CreateDateColumn({ type: "timestamptz" })
     createdAt: Date;
 }

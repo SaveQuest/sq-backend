@@ -1,32 +1,32 @@
-import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
-import { ChallengeService } from '../service/challenge.service';
-import { Challenge } from '../entity/challenge.entity';
+// challenge.controller.ts
+import { Controller, Post, Param, Get, Body } from "@nestjs/common";
+import { ChallengeService } from "../service/challenge.service";
+import { Challenge } from "../entity/challenge.entity";
 
 @Controller('challenges')
 export class ChallengeController {
-    constructor(private readonly challengeService: ChallengeService) {}
+    constructor(private readonly challengeService: ChallengeService) { }
 
-    // 도전과제 조회
-    @Get('daily')
-    async getTopFiveChallenges(): Promise<Challenge[]> {
-        return this.challengeService.getTopFiveChallenges();
+    // 참가자 추가 API
+    @Post(':id/join/:userId')
+    async joinChallenge(@Param('id') challengeId: number, @Param('userId') userId: number): Promise<string> {
+        return this.challengeService.addParticipant(challengeId, userId);
     }
 
-    // 특정 카테고리별 
-    @Get(':category')
-    async getChallengeByCategory(@Param('category') category: string): Promise<Challenge> {
-        return this.challengeService.getChallengeByCategory(category);
+    // 우승자 계산 API
+    @Get(':id/winner')
+    async getChallengeWinner(@Param('id') challengeId: number): Promise<string> {
+        return this.challengeService.calculateWinner(challengeId);
     }
 
-    // 도전과제 생성
-    @Post()
-    async createChallenge(@Body() challengeData: Partial<Challenge>): Promise<Challenge> {
-        return this.challengeService.createChallenge(challengeData);
-    }
-
-    // 도전과제 삭제
-    @Delete(':id')
-    async deleteChallenge(@Param('id') id: number): Promise<void> {
-        return this.challengeService.deleteChallenge(id);
+    // 챌린지 추가 엔드포인트
+    @Post('create')
+    async createChallenge(
+        @Body('title') title: string,
+        @Body('entryFee') entryFee: number,
+        @Body('prize') prize: number,
+        @Body('endDate') endDate: Date,
+    ): Promise<Challenge> {
+        return this.challengeService.createChallenge(title, entryFee, prize, endDate);
     }
 }
