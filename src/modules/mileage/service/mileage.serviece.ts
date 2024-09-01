@@ -16,7 +16,7 @@ export class MileageService {
 
     // 사용자 ID로 사용자 조회
     async findUserById(userId: number): Promise<User | undefined> {
-        return await this.userRepository.findOne({ where: { userId: userId } });
+        return await this.userRepository.findOne({ where: { id: userId } });
     }
 
     // 마일리지를 데이터베이스에 저장하는 메소드
@@ -63,7 +63,7 @@ export class MileageService {
     async getTotalMileageForUser(userId: number): Promise<number> {
         // 사용자 ID로 검색하는데, 올바른 관계 매핑 확인
         const mileages = await this.mileageRepository.find({ 
-            where: { userId: { userId: userId } }, // `userId`가 `User` 객체와 매핑된 경우
+            where: { userId: { id: userId } }, // `userId`가 `User` 객체와 매핑된 경우
             relations: ['userId'], // 관계를 명시적으로 포함하여 정확한 검색
         });
     

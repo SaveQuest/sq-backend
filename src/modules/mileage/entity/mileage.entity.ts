@@ -1,9 +1,12 @@
 import { Exclude } from "class-transformer";
 import { User } from "@/modules/user/entities/user.entity";
-import { Column, CreateDateColumn, Entity, OneToOne, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Mileage {
+    @PrimaryGeneratedColumn("uuid")
+    id: string;
+
     @Exclude()
     @Column()
     amount: number;
@@ -12,7 +15,7 @@ export class Mileage {
     @CreateDateColumn({ type: "timestamptz" })
     spend_at: Date;
 
-    @OneToOne(() => User, user => user.userId, { onDelete: 'CASCADE' })
+    @OneToOne(() => User, user => user.id, { onDelete: 'CASCADE' })
     userId: User;
 
     // cardIssuer: 카드사 (hanacard|kbcard|worricard|bccard|lottecard|kakaomini|tossuss)
