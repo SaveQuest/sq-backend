@@ -4,7 +4,7 @@ import { Column, CreateDateColumn, Entity, ManyToMany, PrimaryGeneratedColumn, J
 @Entity()
 export class Challenge {
     @PrimaryGeneratedColumn()
-    challengeId: number;
+    id: number;
 
     // 챌린지 제목
     @Column()

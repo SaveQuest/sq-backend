@@ -54,7 +54,7 @@ export class ChallengeService {
 
     // 챌린지의 세부 정보 반환
     async getChallengeDetails(challengeId: number): Promise<any> {
-        const challenge = await this.challengeRepository.findOne({ where: { challengeId } });
+        const challenge = await this.challengeRepository.findOne({ where: { id: challengeId } });
         if (!challenge) {
             throw new Error("챌린지를 찾을 수 없습니다.");
         }
@@ -70,8 +70,8 @@ export class ChallengeService {
 
     // 참가자 추가 메서드
     async addParticipant(challengeId: number, userId: number): Promise<string> {
-        const challenge = await this.challengeRepository.findOne({ where: { challengeId }, relations: ['participants'] });
-        const user = await this.userRepository.findOne({ where: { userId } });
+        const challenge = await this.challengeRepository.findOne({ where: { id: challengeId }, relations: ['participants'] });
+        const user = await this.userRepository.findOne({ where: { id: userId } });
 
         if (!challenge || !user) {
             return "챌린지나 유저가 존재하지 않습니다.";
@@ -106,7 +106,7 @@ export class ChallengeService {
 
     // 챌린지참가자 순위 반환
     async getParticipantRankings(challengeId: number): Promise<any[]> {
-        const challenge = await this.challengeRepository.findOne({ where: { challengeId }, relations: ['participants'] });
+        const challenge = await this.challengeRepository.findOne({ where: { id: challengeId }, relations: ['participants'] });
         if (!challenge) {
             throw new Error("챌린지를 찾을 수 없습니다.");
         }
@@ -114,9 +114,9 @@ export class ChallengeService {
         // 참가자 목록 가져오기
         const rankings = [];
         for (const participant of challenge.participants) {
-            const totalMileage = await this.mileageService.getTotalMileageForUser(participant.userId); // 유저의 총 소비량 확인
+            const totalMileage = await this.mileageService.getTotalMileageForUser(participant.id); // 유저의 총 소비량 확인
             rankings.push({
-                userId: participant.userId,
+                userId: participant.id,
                 totalMileage: totalMileage, // 소비량
             });
         }
@@ -130,7 +130,7 @@ export class ChallengeService {
 
     // 챌린지 우승자 계산 메서드
     async calculateWinner(challengeId: number): Promise<string> {
-        const challenge = await this.challengeRepository.findOne({ where: { challengeId }, relations: ['participants'] });
+        const challenge = await this.challengeRepository.findOne({ where: { id: challengeId }, relations: ['participants'] });
         if (!challenge) return '챌린지를 찾을 수 없습니다.';
 
         const now = new Date();
@@ -140,7 +140,7 @@ export class ChallengeService {
         let minMileage: number | null = null;
 
         for (const participant of challenge.participants) {
-            const totalMileage = await this.getUserTotalMileage(participant.userId); // 유저의 총 소비량 확인
+            const totalMileage = await this.getUserTotalMileage(participant.id); // 유저의 총 소비량 확인
             if (minMileage === null || totalMileage < minMileage) {
                 minMileage = totalMileage;
                 winner = participant;
@@ -150,7 +150,7 @@ export class ChallengeService {
         if (winner) {
             winner.points += challenge.prize; // 우승자에게 상금 지급
             await this.userRepository.save(winner);
-            return `${winner.userId}`;
+            return `${winner.id}`;
         } else {
             return null;
         }
@@ -166,7 +166,7 @@ export class ChallengeService {
 
     // 챌린지 종료 및 완료된 챌린지로 이동
     async completeChallenge(challengeId: number): Promise<string> {
-        const challenge = await this.challengeRepository.findOne({ where: { challengeId }, relations: ['participants'] });
+        const challenge = await this.challengeRepository.findOne({ where: { id: challengeId }, relations: ['participants'] });
 
         if (!challenge) {
             return '챌린지를 찾을 수 없습니다.';
@@ -210,14 +210,14 @@ export class ChallengeService {
 
     // 우승자를 가져오는 메서드 (calculateWinner 메서드에서 설정된 우승자 정보를 사용)
     private async getWinner(challengeId: number): Promise<User | null> {
-        const challenge = await this.challengeRepository.findOne({ where: { challengeId }, relations: ['participants'] });
+        const challenge = await this.challengeRepository.findOne({ where: { id: challengeId }, relations: ['participants'] });
         if (!challenge) return null;
 
         let winner: User | null = null;
         let minMileage: number | null = null;
 
         for (const participant of challenge.participants) {
-            const totalMileage = await this.getUserTotalMileage(participant.userId);
+            const totalMileage = await this.getUserTotalMileage(participant.id);
             if (minMileage === null || totalMileage < minMileage) {
                 minMileage = totalMileage;
                 winner = participant;
