@@ -82,4 +82,43 @@ export class ChallengeService {
 
         return await this.challengeRepository.save(newChallenge);
     }
+
+     // 챌린지참가자 순위 반환
+     async getParticipantRankings(challengeId: number): Promise<any[]> {
+        const challenge = await this.challengeRepository.findOne({ where: { challengeId }, relations: ['participants'] });
+        if (!challenge) {
+            throw new Error("챌린지를 찾을 수 없습니다.");
+        }
+
+        // 참가자 목록 가져오기
+        const rankings = [];
+        for (const participant of challenge.participants) {
+            const totalMileage = await this.mileageService.getTotalMileageForUser(participant.userId); // 유저의 총 소비량 확인
+            rankings.push({
+                userId: participant.userId,
+                totalMileage: totalMileage, // 소비량
+                exp: participant.exp, // 사용자 경험치 (레벨)
+            });
+        }
+
+        // 소비량에 따라 오름차순 정렬
+        rankings.sort((a, b) => a.totalMileage - b.totalMileage);
+
+        return rankings;
+    }
+
+     // 챌린지의 세부 정보 반환
+     async getChallengeDetails(challengeId: number): Promise<any> {
+        const challenge = await this.challengeRepository.findOne({ where: { challengeId } });
+        if (!challenge) {
+            throw new Error("챌린지를 찾을 수 없습니다.");
+        }
+
+        return {
+            title: challenge.title,  // 챌린지 제목
+            entryFee: challenge.entryFee,  // 참가비
+            prize: challenge.prize,  // 상금
+            endDate: challenge.endDate,  // 종료 날짜
+        };
+    }
 }

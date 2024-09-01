@@ -29,4 +29,18 @@ export class ChallengeController {
     ): Promise<Challenge> {
         return this.challengeService.createChallenge(title, entryFee, prize, endDate);
     }
+
+
+    // 챌린지에 참가한 유저들의 소비 현황 순위 반환 API
+    @Get(':id/rankings')
+    async getChallengeRankings(@Param('id') challengeId: number): Promise<any[]> {
+        return this.challengeService.getParticipantRankings(challengeId);
+    }
+
+
+     // 챌린지 세부 정보 반환 API
+     @Get(':id/details')
+     async getChallengeDetails(@Param('id') challengeId: number): Promise<any> {
+         return this.challengeService.getChallengeDetails(challengeId);
+     }
 }
