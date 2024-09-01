@@ -25,7 +25,7 @@ export class UserSerivce {
     }
 
     findUserById(userId: number) {
-        return this.userRepository.findOne({ where: { userId } })
+        return this.userRepository.findOne({ where: { id: userId } })
     }
 
     insertUser(){

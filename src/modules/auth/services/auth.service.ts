@@ -37,7 +37,7 @@ export class AuthService {
         await this.verificationCodeRepository.remove(verificationCode)
 
         const user = await this.userService.getUserOrCreate(verificationCode.phoneNumber)
-        const accessToken = this.generateToken(user.userId)
+        const accessToken = this.generateToken(user.id)
 
         return { accessToken }
     }

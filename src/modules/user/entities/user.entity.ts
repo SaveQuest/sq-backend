@@ -1,11 +1,14 @@
+import { Challenge } from "@/modules/challenge/entity/challenge.entity";
 import { Exclude } from "class-transformer";
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, ManyToMany, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
 export class User {
-    @Exclude()
     @PrimaryGeneratedColumn()
-    userId: number
+    id: number
+
+    @ManyToMany(() => Challenge, challenge => challenge.participants)
+    challenges: Challenge[];
 
     @Column({ default: 0 })
     exp: number
