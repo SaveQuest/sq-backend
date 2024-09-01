@@ -58,11 +58,11 @@ export class ChallengeController {
     }
 
 
-    // 우승자 계산 API
-    @Get(':id/winner')
-    async getChallengeWinner(@Param('id') challengeId: number): Promise<string> {
-        return this.challengeService.calculateWinner(challengeId);
-    }
+    // // 우승자 계산 API
+    // @Get(':id/winner')
+    // async getChallengeWinner(@Param('id') challengeId: number): Promise<string> {
+    //     return this.challengeService.calculateWinner(challengeId);
+    // }
 
 
     // 챌린지를 종료하는 API
