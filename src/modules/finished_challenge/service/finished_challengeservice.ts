@@ -21,7 +21,7 @@ export class FinishedChallengeService {
         return await this.finishedChallengeRepository
             .createQueryBuilder("finishedChallenge")
             .leftJoinAndSelect("finishedChallenge.participants", "participant")
-            .where("participant.userId = :userId", { userId })
+            .where("participant.id = :userId", { userId })
             .getMany();
     }
 }

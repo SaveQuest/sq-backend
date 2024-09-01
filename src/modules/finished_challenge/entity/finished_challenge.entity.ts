@@ -5,7 +5,7 @@ import { User } from "@/modules/user/entities/user.entity";
 @Entity()
 export class FinishedChallenge {
     @PrimaryGeneratedColumn()
-    finishedChallengeId: number;
+    id: number;
 
     // 챌린지 제목
     @Column()
