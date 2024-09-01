@@ -22,6 +22,7 @@ export class AuthService {
     ) { }
 
     async requestCode({ phoneNumber }: RequestCodeDto) {
+        console.log(phoneNumber)
         const code = this.generateCode()
         const expiredAt = dayjs().add(30, "minutes").toDate()
         const uuid = crypto.randomUUID()
