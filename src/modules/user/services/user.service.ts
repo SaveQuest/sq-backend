@@ -1,11 +1,11 @@
- import { Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { Repository } from "typeorm";
 import { User } from "../entities/user.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Transactional } from "typeorm-transactional";
 
 @Injectable()
-export class UserSerivce {
+export class UserService {
     constructor(
         @InjectRepository(User)
         private readonly userRepository: Repository<User>

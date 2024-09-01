@@ -1,11 +1,11 @@
 import { Controller, Get, Request } from '@nestjs/common';
-import { UserSerivce } from '../services/user.service';
+import { UserService } from '../services/user.service';
 import { IncomingMessage } from 'http';
 
 @Controller('user')
 export class UserController {
     constructor(
-        private readonly userService: UserSerivce
+        private readonly userService: UserService
     ) {}
 
     @Get("me")
