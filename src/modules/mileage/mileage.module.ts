@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { mileage } from './entity/mileage.entity';
+import { Mileage } from './entity/mileage.entity';
 import { MileageService } from './service/mileage.serviece';
 import { MileageController } from './controller/mileage.controller';
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([mileage])
+        TypeOrmModule.forFeature([Mileage])
     ],
     providers: [
         MileageService
@@ -16,4 +16,4 @@ import { MileageController } from './controller/mileage.controller';
     ],
     controllers: [MileageController],
 })
-export class UserModule {}
+export class MileageModule {}

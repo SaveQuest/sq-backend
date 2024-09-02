@@ -4,7 +4,7 @@ import { Column, CreateDateColumn, Entity, ManyToMany, PrimaryGeneratedColumn, J
 @Entity()
 export class Challenge {
     @PrimaryGeneratedColumn()
-    challengeId: number;
+    id: number;
 
     // 챌린지 제목
     @Column()
@@ -17,6 +17,9 @@ export class Challenge {
     // 우승 상금
     @Column()
     prize: number;
+
+    @Column()
+    isFinished: boolean;
 
     // 챌린지 종료 날짜
     @Column({ type: "timestamptz" })

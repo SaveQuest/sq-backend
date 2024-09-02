@@ -1,21 +1,7 @@
-import { Controller, Get, Request } from '@nestjs/common';
-import { MileageService  } from '../service/mileage.serviece';
-import { usedAmount } from 'http';
-
-
-interface UsedAmount {
-    userId: number;
-    amount: number;
-    date: Date;
-    cardIssuer: 'hanacard' | 'kbcard' | 'worricard' | 'bccard' | 'lottecard' | 'kakaomini' | 'tossuss';
-    approvalTime: number;
-    merchantName: string;
-    approvalNumber?: string;
-    merchantCategory?: string;
-    merchantId?: string;
-    merchantBusinessNumber?: string;
-}
-
+// mileage.controller.ts
+import { Controller, Get, Body } from '@nestjs/common';
+import { MileageService } from '../service/mileage.serviece';
+import { UsedAmountDto } from '../dto/usedAmount.dto';
 
 @Controller('mileage')
 export class MileageController {
@@ -24,31 +10,7 @@ export class MileageController {
     ) {}
 
     @Get('stackMileage')
-    async stackMileage(@Request() req: { body: UsedAmount }) {
-        const {
-            userId,
-            amount,
-            date,
-            cardIssuer,
-            approvalTime,
-            merchantName,
-            approvalNumber,
-            merchantCategory,
-            merchantId,
-            merchantBusinessNumber,
-        } = req.body;
-
-        return await this.mileageService.insertMileageByUsers(
-            userId,
-            amount,
-            date,
-            cardIssuer,
-            approvalTime,
-            merchantName,
-            approvalNumber,
-            merchantCategory,
-            merchantId,
-            merchantBusinessNumber
-        );
+    async stackMileage(@Body() usedAmountDto: UsedAmountDto) {
+        return await this.mileageService.insertMileageByUsers(usedAmountDto);
     }
 }
