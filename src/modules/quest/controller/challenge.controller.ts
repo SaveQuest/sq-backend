@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
 import { ChallengeService } from '../service/challenge.service';
-import { Challenge } from '../entity/challenge.entity';
+import { Quest } from '../entity/challenge.entity';
 
 @Controller('challenges')
 export class ChallengeController {
@@ -8,19 +8,19 @@ export class ChallengeController {
 
     // 도전과제 조회
     @Get('daily')
-    async getTopFiveChallenges(): Promise<Challenge[]> {
+    async getTopFiveChallenges(): Promise<Quest[]> {
         return this.challengeService.getTopFiveChallenges();
     }
 
     // 특정 카테고리별 
     @Get(':category')
-    async getChallengeByCategory(@Param('category') category: string): Promise<Challenge> {
+    async getChallengeByCategory(@Param('category') category: string): Promise<Quest> {
         return this.challengeService.getChallengeByCategory(category);
     }
 
     // 도전과제 생성
     @Post()
-    async createChallenge(@Body() challengeData: Partial<Challenge>): Promise<Challenge> {
+    async createChallenge(@Body() challengeData: Partial<Quest>): Promise<Quest> {
         return this.challengeService.createChallenge(challengeData);
     }
 
