@@ -1,9 +1,13 @@
 import { Exclude } from "class-transformer";
 import { User } from "@/modules/user/entities/user.entity";
-import { Column, CreateDateColumn, Entity, OneToOne, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Mileage {
+    @Exclude()
+    @PrimaryGeneratedColumn()
+    id: number;
+
     @Exclude()
     @Column()
     amount: number;
