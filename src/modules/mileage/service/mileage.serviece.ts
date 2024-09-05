@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { User } from "@/modules/user/entities/user.entity";
-import { Mileage } from "../entity/mileage.entity";  // 'mileage' 엔티티를 'Mileage'로 수정
+import { Mileage } from "../entity/mileage.entity";
 
 @Injectable()
 export class MileageService {

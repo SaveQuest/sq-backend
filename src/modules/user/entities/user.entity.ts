@@ -1,4 +1,5 @@
 import { Challenge } from "@/modules/challenge/entity/challenge.entity";
+import { Quest } from "@/modules/quest/entity/quest.entity";
 import { Exclude } from "class-transformer";
 import { Column, ManyToMany, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
@@ -9,6 +10,9 @@ export class User {
 
     @ManyToMany(() => Challenge, challenge => challenge.participants)
     challenges: Challenge[];
+
+    // @ManyToMany(() => Quest, quest => quest.participants)
+    // quests: Quest[];
 
     @Column({ default: 0 })
     exp: number

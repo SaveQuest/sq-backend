@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeor
 import { Exclude } from "class-transformer";
 
 @Entity()
-export class Challenge {
+export class Quest {
     @Exclude()
     @PrimaryGeneratedColumn()
     id: number;

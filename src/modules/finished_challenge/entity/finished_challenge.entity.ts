@@ -1,4 +1,4 @@
-// finished-challenge.entity.ts
+// finished-quest.entity.ts
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne } from 'typeorm';
 import { User } from "@/modules/user/entities/user.entity";
 

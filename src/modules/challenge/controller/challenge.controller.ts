@@ -1,4 +1,4 @@
-// challenge.controller.ts
+// quest.controller.ts
 import { Controller, Post, Param, Get, Body } from "@nestjs/common";
 import { ChallengeService } from "../service/challenge.service";
 import { Challenge } from "../entity/challenge.entity";

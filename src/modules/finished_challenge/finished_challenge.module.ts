@@ -1,4 +1,4 @@
-// finished-challenge.module.ts
+// finished-quest.module.ts
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { FinishedChallenge } from './entity/finished_challenge.entity';
