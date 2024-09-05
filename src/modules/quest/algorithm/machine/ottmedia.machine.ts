@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import OTTMediaFilter from '@/modules/quest/algorithm/filter/ottmedia.filter';
 import { Quest } from '@/modules/quest/entity/quest.entity';
+import { Mileage } from "@/modules/mileage/entity/mileage.entity";
 
 export function match(merchantName: string): string | boolean {
     const filters = [
@@ -41,5 +42,15 @@ export function generate(filterName: string): Quest {
       .add(1, "month")
       .add(15, "day")
       .toDate()
+    quest.status = "inProgress";
     return quest;
+}
+
+export function check(record: Mileage, quest: Quest): boolean {
+    if (record.merchantName === quest.name) {
+        if (record.amount > quest.limitUsage) {
+            return false;
+        }
+    }
+    return true;
 }

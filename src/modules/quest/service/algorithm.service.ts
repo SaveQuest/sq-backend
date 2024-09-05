@@ -34,4 +34,27 @@ export class AlgorithmService {
 
     return recommendedQuests;
   }
+
+  async checkQuestCompletion(userId: number): Promise<void> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['quests'],
+    });
+
+    for (const record of user.mileage) {
+      for (const quest of user.quests) {
+        if (OTTMedia.match(record.merchantName)) {
+          if (quest.deadline < new Date()) {
+            if (OTTMedia.check(record, quest)) {
+              quest.status = 'completed';
+              user.points += quest.reward;
+            } else {
+              quest.status = 'failed';
+            }
+            await this.questRepository.save(quest);
+          }
+        }
+      }
+    }
+  }
 }

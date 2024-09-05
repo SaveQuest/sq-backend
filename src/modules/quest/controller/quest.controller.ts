@@ -29,6 +29,11 @@ export class QuestController {
         return this.algorithmService.generateDailyQuests(req.userId);
     }
 
+    @Post("checkStatus")
+    async checkQuestCompletion(@Request() req: IncomingMessage): Promise<void> {
+        await this.algorithmService.checkQuestCompletion(req.userId);
+    }
+
     // 도전과제 삭제
     @Delete(':id')
     async deleteChallenge(@Param('id') id: number): Promise<void> {

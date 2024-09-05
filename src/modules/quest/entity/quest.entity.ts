@@ -27,4 +27,7 @@ export class Quest {
 
     @CreateDateColumn({ type: 'timestamptz' })
     createdAt: Date;
+
+    @Column()
+    status: 'inProgress' | 'completed' | 'failed';
 }
