@@ -52,6 +52,7 @@ export class ChallengeController {
 
 
     // 챌린지에 참가한 유저들의 소비 현황 순위 반환 API
+    // * typeorm jointable 오류 해결 안됨
     @Get(':id/rankings')
     async getChallengeRankings(@Param('id') challengeId: number): Promise<any[]> {
         return this.challengeService.getParticipantRankings(challengeId);
