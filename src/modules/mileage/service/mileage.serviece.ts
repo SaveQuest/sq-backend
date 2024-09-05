@@ -100,15 +100,15 @@ export class MileageService {
     //     return await this.mileageRepository.save(newMileage);
     // }
     //
-    // // 특정 유저의 총 소비량 계산
-    // async getTotalMileageForUser(userId: number): Promise<number> {
-    //     // 사용자 ID로 검색하는데, 올바른 관계 매핑 확인
-    //     const mileages = await this.mileageRepository.find({
-    //         where: { userId: { id: userId } }, // `userId`가 `User` 객체와 매핑된 경우
-    //         relations: ['userId'], // 관계를 명시적으로 포함하여 정확한 검색
-    //     });
-    //
-    //     // amount 값이 `null`이거나 `undefined`일 경우에 대한 방어 코드
-    //     return mileages.reduce((total, mileage) => total + (mileage.amount || 0), 0);
-    // }
+    // 특정 유저의 총 소비량 계산
+    async getTotalMileageForUser(userId: number): Promise<number> {
+        // 사용자 ID로 검색하는데, 올바른 관계 매핑 확인
+        const mileages = await this.mileageRepository.find({
+            where: { id:  userId  }, // `userId`가 `User` 객체와 매핑된 경우
+            relations: ['userId'], // 관계를 명시적으로 포함하여 정확한 검색
+        });
+
+        // amount 값이 `null`이거나 `undefined`일 경우에 대한 방어 코드
+        return mileages.reduce((total, mileage) => total + (mileage.amount || 0), 0);
+    }
 }

@@ -9,7 +9,7 @@ import { SmsModule } from './modules/sms/sms.module';
 import { QuestModule } from './modules/quest/quest.module';
 import { MileageModule } from './modules/mileage/mileage.module';
 import { ShopModule } from './modules/shop/shop.module';
-// import { ChallengeModule } from './modules/challenge/challenge.module';
+import { ChallengeModule } from './modules/challenge/challenge.module';
 import dataSource from './ormconfig';
 
 import { DataSource } from 'typeorm';
@@ -34,7 +34,7 @@ import { SeedingModule } from './modules/seeding/seeding.module';
     AuthModule,
     SmsModule,
     SeedingModule,
-    // ChallengeModule,
+    ChallengeModule,
     ShopModule,
     MileageModule,
     QuestModule,
