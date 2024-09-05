@@ -1,5 +1,5 @@
 import { User } from "@/modules/user/entities/user.entity";
-import { Column, CreateDateColumn, Entity, ManyToMany, PrimaryGeneratedColumn, JoinTable } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToMany, PrimaryGeneratedColumn, JoinTable, ManyToOne } from "typeorm";
 
 @Entity()
 export class Challenge {
@@ -11,7 +11,7 @@ export class Challenge {
     title: string;
 
     // 챌린지 참가비
-    @Column()
+    @Column({default:0})
     entryFee: number;
 
     // 우승 상금
@@ -27,7 +27,11 @@ export class Challenge {
 
     // 챌린지 참가자들 (ManyToMany 관계)
     @ManyToMany(() => User)
-    @JoinTable()
+    @JoinTable({
+        name: 'challenge_participants', // 조인 테이블 이름 (선택 사항)
+        joinColumns: [{ name: 'userID' }], // Challenge 쪽 조인 컬럼
+        inverseJoinColumns: [{ name: 'id' }], // User 쪽 조인 컬럼
+      })
     participants: User[];
 
     @CreateDateColumn({ type: "timestamptz" })

@@ -61,9 +61,9 @@ export class ChallengeService {
       throw new NotFoundChallengesException();
     }
 
-    if (user.points < challenge.entryFee) {
-      throw new InsufficientEntryFeeException();
-    }
+    // if (user.points <= challenge.entryFee) {
+    //   throw new InsufficientEntryFeeException();
+    // }
 
     user.points -= challenge.entryFee;
     challenge.participants.push(user);
@@ -143,6 +143,7 @@ export class ChallengeService {
 
   async completeChallenge(id: number): Promise<any> {
     const challenge = await this.challengeRepository.findOne({ where: { id }, relations: ['participants'] });
+    
     if (!challenge) {
       throw new NotFoundChallengesException();
     }
@@ -153,13 +154,23 @@ export class ChallengeService {
     }
 
     const winnerId = await this.calculateWinner(id);
-    const winner = await this.userRepository.findOne({ where: { userId: Number(winnerId) } });
+
+    if (isNaN(parseInt(winnerId))) {
+      throw new Error('Invalid winner ID');
+    }
+
+    const winner = await this.userRepository.findOne({ where: { userId: parseInt(winnerId) } });
+
+    if (!winner) {
+      throw new Error('Winner not found');
+    }
 
     challenge.isFinished = true;
     await this.challengeRepository.save(challenge);
 
     return { message: `${challenge.title} 챌린지가 완료되었습니다. ${winner.phoneNumber}님이 우승하셨습니다!` };
-  }
+}
+
 
   async getUserFinishedChallenges(userId: number): Promise<Challenge[]> {
     return await this.challengeRepository

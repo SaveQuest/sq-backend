@@ -10,7 +10,7 @@ export class User {
     @Column({ default: 0 })
     exp: number
 
-    @Column({ default: 0 })
+    @Column({ type:"int", default: 4000 })
     points: number
 
     @Column({ unique: true })
