@@ -1,4 +1,4 @@
-import * as dayjs from 'dayjs';
+import dayjs from "dayjs";
 import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -7,14 +7,14 @@ import { AuthenticateDto } from '../dto/authenticate.dto';
 import { JwtService } from '@nestjs/jwt';
 import { VerificationCode } from '@/modules/auth/entities/verification-code.entity';
 import { SmsService } from '@/modules/sms/services/sms.service';
-import { UserSerivce } from '@/modules/user/services/user.service';
+import { UserService } from '@/modules/user/services/user.service';
 import { InvalidVerificationCodeException } from '../exceptions/InvalidVerificationCodeException';
 import { ExpiredVerificationCodeException } from '../exceptions/ExpiredVerificationCodeException';
 
 @Injectable()
 export class AuthService {
     constructor(
-        private readonly userService: UserSerivce,
+        private readonly userService: UserService,
         private readonly smsService: SmsService,
         private readonly jwtService: JwtService,
         @InjectRepository(VerificationCode)
@@ -22,6 +22,7 @@ export class AuthService {
     ) { }
 
     async requestCode({ phoneNumber }: RequestCodeDto) {
+        console.log(phoneNumber)
         const code = this.generateCode()
         const expiredAt = dayjs().add(30, "minutes").toDate()
         const uuid = crypto.randomUUID()
@@ -37,7 +38,7 @@ export class AuthService {
         await this.verificationCodeRepository.remove(verificationCode)
 
         const user = await this.userService.getUserOrCreate(verificationCode.phoneNumber)
-        const accessToken = this.generateToken(user.userId)
+        const accessToken = this.generateToken(user.id)
 
         return { accessToken }
     }

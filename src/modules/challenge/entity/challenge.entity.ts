@@ -20,7 +20,7 @@ export class Challenge {
 
     @Column()
     isFinished: boolean;
-
+  
     // 챌린지 종료 날짜
     @Column({ type: "timestamptz" })
     endDate: Date;

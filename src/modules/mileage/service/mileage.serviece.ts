@@ -20,7 +20,7 @@ export class MileageService {
 
     // 사용자 ID로 사용자 조회
     async findUserById(userId: number): Promise<User | undefined> {
-        return await this.userRepository.findOne({ where: { userId: userId } });
+        return await this.userRepository.findOne({ where: { id: userId } });
     }
 
     // 마일리지를 데이터베이스에 저장하는 메소드
@@ -53,6 +53,7 @@ export class MileageService {
         newMileage.userId = user;  // User 엔티티와 연결
         newMileage.spend_at = date;  // 사용 날짜
         newMileage.amount = amount;  // 결제 금액
+
         newMileage.cardIssuer = cardIssuer;
         newMileage.approvalTime = approvalTime;
         newMileage.merchantName = merchantName;
