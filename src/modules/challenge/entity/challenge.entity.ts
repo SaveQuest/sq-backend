@@ -26,12 +26,8 @@ export class Challenge {
     endDate: Date;
 
     // 챌린지 참가자들 (ManyToMany 관계)
-    @ManyToMany(() => User)
-    @JoinTable({
-        name: 'challenge_participants', // 조인 테이블 이름 (선택 사항)
-        joinColumns: [{ name: 'userID' }], // Challenge 쪽 조인 컬럼
-        inverseJoinColumns: [{ name: 'id' }], // User 쪽 조인 컬럼
-      })
+    @ManyToMany(() => User, user => user.userId) 
+    @JoinTable()
     participants: User[];
 
     @CreateDateColumn({ type: "timestamptz" })
