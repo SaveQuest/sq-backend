@@ -9,14 +9,14 @@ import { InsufficientPointsException } from "@/modules/shop/exception/Insufficie
 import { User } from "@/modules/user/entities/user.entity";
 
 @Injectable()
-export class ProductService {
+export class ShopService {
   constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
     @InjectRepository(Product)
     private productRepository: Repository<Product>,
     @InjectRepository(Review)
     private reviewRepository: Repository<Review>,
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
   ) {}
 
   // async createProduct(name: string, price: number, description: string): Promise<Product> {

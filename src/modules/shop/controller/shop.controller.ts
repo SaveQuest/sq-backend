@@ -1,11 +1,11 @@
 import { Controller, Post, Get, Param, Body, Query } from '@nestjs/common';
-import { ProductService } from '@/modules/shop/service/shop.service';
+import { ShopService } from '@/modules/shop/service/shop.service';
 import { Product } from '@/modules/shop/entity/product.entity';
 import { Review } from '@/modules/shop/entity/review.entity';
 
 @Controller('shop')
-export class ProductController {
-  constructor(private readonly productService: ProductService) {}
+export class ShopController {
+  constructor(private readonly productService: ShopService) {}
 
   @Post(':id/reviews')
   async addReview(
