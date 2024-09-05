@@ -12,7 +12,7 @@ import { UserController } from './controllers/user.controller';
         UserService
     ],
     exports: [
-        UserService
+        UserSerivce, TypeOrmModule
     ],
     controllers: [UserController],
 })

@@ -4,8 +4,9 @@ import { Column, CreateDateColumn, Entity, OneToOne, PrimaryGeneratedColumn } fr
 
 @Entity()
 export class Mileage {
-    @PrimaryGeneratedColumn("uuid")
-    id: string;
+    @Exclude()
+    @PrimaryGeneratedColumn()
+    id: number;
 
     @Exclude()
     @Column()
@@ -15,7 +16,7 @@ export class Mileage {
     @CreateDateColumn({ type: "timestamptz" })
     spend_at: Date;
 
-    @OneToOne(() => User, user => user.id, { onDelete: 'CASCADE' })
+    @OneToOne(() => User, user => user.userId, { onDelete: 'CASCADE' })
     userId: User;
 
     // cardIssuer: 카드사 (hanacard|kbcard|worricard|bccard|lottecard|kakaomini|tossuss)

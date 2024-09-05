@@ -1,6 +1,8 @@
-import { Controller, Get, Request } from '@nestjs/common';
-import { MileageService  } from '../service/mileage.serviece';
-import { usedAmount } from 'http';
+// mileage.controller.ts
+import { Controller, Get, Body } from '@nestjs/common';
+import { MileageService } from '../service/mileage.serviece';
+import { UsedAmountDto } from '../dto/usedAmount.dto';
+import { ApiBearerAuth } from "@nestjs/swagger";
 
 
 interface UsedAmount {
@@ -18,37 +20,14 @@ interface UsedAmount {
 
 
 @Controller('mileage')
+@ApiBearerAuth('accessToken') 
 export class MileageController {
     constructor(
         private readonly mileageService: MileageService
     ) {}
 
     @Get('stackMileage')
-    async stackMileage(@Request() req: { body: UsedAmount }) {
-        const {
-            userId,
-            amount,
-            date,
-            cardIssuer,
-            approvalTime,
-            merchantName,
-            approvalNumber,
-            merchantCategory,
-            merchantId,
-            merchantBusinessNumber,
-        } = req.body;
-
-        return await this.mileageService.insertMileageByUsers(
-            userId,
-            amount,
-            date,
-            cardIssuer,
-            approvalTime,
-            merchantName,
-            approvalNumber,
-            merchantCategory,
-            merchantId,
-            merchantBusinessNumber
-        );
+    async stackMileage(@Body() usedAmountDto: UsedAmountDto) {
+        return await this.mileageService.insertMileageByUsers(usedAmountDto);
     }
 }

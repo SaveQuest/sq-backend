@@ -6,6 +6,9 @@ import { envValidator } from './config/env.validator';
 import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { SmsModule } from './modules/sms/sms.module';
+import { QuestModule } from './modules/quest/challenge.module';   
+import { MileageModule } from './modules/mileage/mileage.module';
+import { ChallengeModule } from './modules/challenge/challenge.module';
 import dataSource from './ormconfig';
 
 import { DataSource } from 'typeorm';
@@ -30,6 +33,9 @@ import { SeedingModule } from './modules/seeding/seeding.module';
     AuthModule,
     SmsModule,
     SeedingModule,
+    ChallengeModule,
+    MileageModule,
+    QuestModule,
   ],
   controllers: [],
 })
