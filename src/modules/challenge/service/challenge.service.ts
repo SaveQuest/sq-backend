@@ -31,6 +31,7 @@ export class ChallengeService {
     }));
   }
 
+  // 참가중인 챌린지 조회
   async getUserActiveChallenges(userId: number): Promise<Challenge[]> {
     return await this.challengeRepository
       .createQueryBuilder("challenge")
