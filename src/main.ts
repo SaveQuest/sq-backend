@@ -9,19 +9,33 @@ async function bootstrap() {
 
   const app = await NestFactory.create(AppModule);
 
+  // Swagger 설정에 Authorization 헤더 추가
   const config = new DocumentBuilder()
-    .setTitle('Challenge API')
-    .setDescription('API documentation for challenges and users')
-    .setVersion('1.0')
-    .addTag('challenges')
-    .build();
+  .setTitle('SaveQuest API')
+  .setDescription('API documentation for the SaveQuest mobile application.')
+  .setVersion('0.0.1')
+  .addServer('http://localhost:3000', 'Local development server')
+  .addBearerAuth(
+    {
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'JWT',
+    },
+    'accessToken',
+  )
+  .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api-docs', app, document);
+  SwaggerModule.setup('api-docs', app, document,{
+    swaggerOptions: {
+      persistAuthorization: true,  // 인증 유지
+    },
+  });
 
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
 
   await app.listen(3000);
 }
+
 bootstrap();

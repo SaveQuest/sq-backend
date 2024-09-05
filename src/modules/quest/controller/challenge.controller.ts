@@ -2,7 +2,7 @@ import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common'
 import { ChallengeService } from '../service/challenge.service';
 import { Quest } from '../entity/challenge.entity';
 
-@Controller('challenges')
+@Controller('quest')
 export class ChallengeController {
     constructor(private readonly challengeService: ChallengeService) {}
 

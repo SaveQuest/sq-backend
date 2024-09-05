@@ -4,8 +4,10 @@ import { ChallengeService } from "../service/challenge.service";
 import { Challenge } from "../entity/challenge.entity";
 import { CreateChallengeDto } from '../dto/CreateChallenge.dto';
 import { JoinChallengeDto } from '../dto/JoinChallenge.dto';
+import { ApiBearerAuth } from "@nestjs/swagger";
 
 @Controller('challenges')
+@ApiBearerAuth('accessToken') 
 export class ChallengeController {
   constructor(
     private readonly challengeService: ChallengeService,

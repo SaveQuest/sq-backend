@@ -75,12 +75,13 @@ export class ChallengeService {
   }
 
   async createChallenge(createChallengeDto: CreateChallengeDto): Promise<Challenge> {
-    const { title, entryFee, prize, endDate } = createChallengeDto;
+    const { title, entryFee, prize, isFinished, endDate } = createChallengeDto;
 
     const newChallenge = this.challengeRepository.create({
       title,
       entryFee,
       prize,
+      isFinished,
       endDate,
     });
 
