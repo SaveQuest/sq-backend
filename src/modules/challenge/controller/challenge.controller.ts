@@ -33,15 +33,15 @@ export class ChallengeController {
 
 
     // 챌린지 추가 엔드포인트
-    @Post('create')
-    async createChallenge(
-        @Body('title') title: string,
-        @Body('entryFee') entryFee: number,
-        @Body('prize') prize: number,
-        @Body('endDate') endDate: Date,
-    ): Promise<Challenge> {
-        return this.challengeService.createChallenge(title, entryFee, prize, endDate);
-    }
+    // @Post('create')
+    // async createChallenge(
+    //     @Body('title') title: string,
+    //     @Body('entryFee') entryFee: number,
+    //     @Body('prize') prize: number,
+    //     @Body('endDate') endDate: Date,
+    // ): Promise<Challenge> {
+    //     return this.challengeService.createChallenge(title, entryFee, prize, endDate);
+    // }
 
 
     // 참가자 추가 API

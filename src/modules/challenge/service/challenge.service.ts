@@ -56,7 +56,7 @@ export class ChallengeService {
 
   async addParticipant(id: number, userId: number): Promise<any> {
     const challenge = await this.challengeRepository.findOne({ where: { id }, relations: ['participants'] });
-    const user = await this.userRepository.findOne({ where: { userId } });
+    const user = await this.userRepository.findOne({ where: { id: userId } });
 
     if (!challenge) {
       throw new NotFoundChallengesException();
@@ -97,9 +97,9 @@ export class ChallengeService {
 
     const rankings = [];
     for (const participant of challenge.participants) {
-      const totalMileage = await this.mileageService.getTotalMileageForUser(participant.userId);
+      const totalMileage = await this.mileageService.getTotalMileageForUser(participant.id);
       rankings.push({
-        userId: participant.userId,
+        userId: participant.id,
         totalMileage: totalMileage,
       });
     }
@@ -124,7 +124,7 @@ export class ChallengeService {
     let minMileage: number | null = null;
 
     for (const participant of challenge.participants) {
-      const totalMileage = await this.getUserTotalMileage(participant.userId);
+      const totalMileage = await this.getUserTotalMileage(participant.id);
       if (minMileage === null || totalMileage < minMileage) {
         minMileage = totalMileage;
         winner = participant;
@@ -134,7 +134,7 @@ export class ChallengeService {
     if (winner) {
       winner.points += challenge.prize;
       await this.userRepository.save(winner);
-      return winner.userId.toString();
+      return winner.id.toString();
     }
   }
 
@@ -160,7 +160,7 @@ export class ChallengeService {
       throw new Error('Invalid winner ID');
     }
 
-    const winner = await this.userRepository.findOne({ where: { userId: parseInt(winnerId) } });
+    const winner = await this.userRepository.findOne({ where: { id: parseInt(winnerId) } });
 
     if (!winner) {
       throw new Error('Winner not found');

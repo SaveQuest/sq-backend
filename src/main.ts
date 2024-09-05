@@ -9,7 +9,6 @@ async function bootstrap() {
   initializeTransactionalContext();
 
   const app = await NestFactory.create(AppModule);
-  const document = SwaggerModule.createDocument(app, DocumentConfig);
 
   // Swagger 설정에 Authorization 헤더 추가
   const config = new DocumentBuilder()

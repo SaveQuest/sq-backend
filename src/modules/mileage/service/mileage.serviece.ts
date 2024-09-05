@@ -70,7 +70,7 @@ export class MileageService {
     async getTotalMileageForUser(userId: number): Promise<number> {
         // 사용자 ID로 검색하는데, 올바른 관계 매핑 확인
         const mileages = await this.mileageRepository.find({ 
-            where: { userId: { userId: userId } }, // `userId`가 `User` 객체와 매핑된 경우
+            where: { userId: { id: userId } }, // `userId`가 `User` 객체와 매핑된 경우
             relations: ['userId'], // 관계를 명시적으로 포함하여 정확한 검색
         });
     

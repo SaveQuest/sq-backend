@@ -26,7 +26,7 @@ export class Challenge {
     endDate: Date;
 
     // 챌린지 참가자들 (ManyToMany 관계)
-    @ManyToMany(() => User, user => user.userId) 
+    @ManyToMany(() => User, user => user.id)
     @JoinTable()
     participants: User[];
 
