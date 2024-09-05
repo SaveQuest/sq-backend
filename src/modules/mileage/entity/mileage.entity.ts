@@ -16,9 +16,6 @@ export class Mileage {
     @CreateDateColumn({ type: "timestamptz" })
     spend_at: Date;
 
-    @OneToOne(() => User, user => user.id, { onDelete: 'CASCADE' })
-    userId: User;
-
     // cardIssuer: 카드사 (hanacard|kbcard|worricard|bccard|lottecard|kakaomini|tossuss)
     @Column({ type: "varchar" })
     cardIssuer: 'hanacard' | 'kbcard' | 'worricard' | 'bccard' | 'lottecard' | 'kakaomini' | 'tossuss';
