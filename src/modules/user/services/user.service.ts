@@ -5,7 +5,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Transactional } from "typeorm-transactional";
 
 @Injectable()
-export class UserSerivce {
+export class UserService {
     constructor(
         @InjectRepository(User)
         private readonly userRepository: Repository<User>
@@ -25,7 +25,7 @@ export class UserSerivce {
     }
 
     findUserById(userId: number) {
-        return this.userRepository.findOne({ where: { userId } })
+        return this.userRepository.findOne({ where: { id: userId } })
     }
 
     insertUser(){
