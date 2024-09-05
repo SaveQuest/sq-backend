@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Param, Body } from '@nestjs/common';
+import { Controller, Post, Get, Param, Body, Query } from '@nestjs/common';
 import { ProductService } from '@/modules/shop/service/shop.service';
 import { Product } from '@/modules/shop/entity/product.entity';
 import { Review } from '@/modules/shop/entity/review.entity';
@@ -7,7 +7,6 @@ import { Review } from '@/modules/shop/entity/review.entity';
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
-  // 특정 상품의 리뷰 추가
   @Post(':id/reviews')
   async addReview(
     @Param('id') productId: number,
@@ -17,9 +16,22 @@ export class ProductController {
     return this.productService.addReview(productId, content, rating);
   }
 
-  // 특정 상품과 해당 상품의 리뷰 조회
-  @Get(':id')
+  @Get(':id/reviews')
   async getProductWithReviews(@Param('id') productId: number): Promise<Product> {
     return this.productService.getProductWithReviews(productId);
+  }
+
+  @Get('/products')
+  async getProductsByIds(@Query('ids') ids: string): Promise<Product[]> {
+    const idArray = ids.split(',').map(Number);
+    return this.productService.getProductsByIds(idArray);
+  }
+
+  @Post('purchase')
+  async purchaseProducts(
+    @Body('productIds') productIds: number[],
+    @Body('userId') userId: number,
+  ): Promise<Product[]> {
+    return this.productService.purchaseProducts(productIds, userId);
   }
 }
