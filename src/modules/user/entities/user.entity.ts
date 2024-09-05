@@ -19,6 +19,12 @@ export class User {
     mileage: Mileage[];
 
     @Column({ default: 0 })
+    dailyUsage: number
+
+    @Column({ default: 0 })
+    yesterdayUsage: number
+
+    @Column({ default: 0 })
     exp: number
 
     @Column({ type:"int", default: 4000 })

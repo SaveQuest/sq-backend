@@ -38,6 +38,7 @@ export class MileageService {
             newMileage.merchantCategory = history.merchantCategory;
             newMileage.merchantId = history.merchantId;
             newMileage.merchantBusinessNumber = history.merchantBusinessNumber;
+            targetUser.dailyUsage += history.amount;
             await this.mileageRepository.save(newMileage);
 
             return newMileage;
