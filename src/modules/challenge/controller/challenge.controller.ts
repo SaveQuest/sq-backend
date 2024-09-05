@@ -1,9 +1,8 @@
 // quest.controller.ts
 import { Controller, Post, Param, Get, Body } from "@nestjs/common";
-import { ChallengeService } from "../service/challenge.service";
-import { Challenge } from "../entity/challenge.entity";
+import { ChallengeService } from "@/modules/challenge/service/challenge.service";
 
-@Controller('challenges')
+@Controller('challenge')
 export class ChallengeController {
     constructor(
         private readonly challengeService: ChallengeService,

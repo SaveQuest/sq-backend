@@ -14,17 +14,20 @@ export class Quest {
     description: string;
 
     @Column('int')
-    targetUsage: number;
+    limitUsage: number;
 
     @Column()
     category: string;
 
     @Column()
-    reward: string;
+    reward: number;
 
     @Column({ type: 'timestamptz' })
     deadline: Date;
 
     @CreateDateColumn({ type: 'timestamptz' })
     createdAt: Date;
+
+    @Column()
+    status: 'inProgress' | 'completed' | 'failed';
 }

@@ -1,4 +1,4 @@
-// quest.service.ts
+// // quest.service.ts
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
@@ -144,7 +144,7 @@ export class ChallengeService {
 
   async completeChallenge(id: number): Promise<any> {
     const challenge = await this.challengeRepository.findOne({ where: { id }, relations: ['participants'] });
-    
+
     if (!challenge) {
       throw new NotFoundChallengesException();
     }

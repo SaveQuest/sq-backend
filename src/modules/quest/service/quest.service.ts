@@ -8,6 +8,7 @@ export class QuestService {
     constructor(
         @InjectRepository(Quest)
         private readonly challengeRepository: Repository<Quest>,
+
     ) {}
 
     // 도전과제 조회
