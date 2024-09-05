@@ -36,7 +36,7 @@ export function generate(filterName: string): Quest {
     quest.name = `${serviceName[filterName]} 구독하지 않기`;
     quest.description = `${serviceName[filterName]} 구독을 해지하고 고정 지출을 줄여보세요.`;
     quest.limitUsage = 0;
-    quest.category = "OTT";
+    quest.category = `OTT/${filterName}`;
     quest.reward = 200;
     quest.deadline = dayjs()
       .add(1, "month")
@@ -47,7 +47,7 @@ export function generate(filterName: string): Quest {
 }
 
 export function check(record: Mileage, quest: Quest): boolean {
-    if (record.merchantName === quest.name) {
+    if (match(record.merchantName) === quest.category.split("/")[1]) {
         if (record.amount > quest.limitUsage) {
             return false;
         }
