@@ -6,7 +6,7 @@ import { envValidator } from './config/env.validator';
 import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { SmsModule } from './modules/sms/sms.module';
-import { QuestModule } from './modules/quest/challenge.module';   
+import { QuestModule } from './modules/quest/quest.module';
 import { MileageModule } from './modules/mileage/mileage.module';
 import { ChallengeModule } from './modules/challenge/challenge.module';
 import dataSource from './ormconfig';

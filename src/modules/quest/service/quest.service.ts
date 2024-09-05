@@ -21,18 +21,18 @@ export class QuestService {
     }
 
     // 특정 도전과제 조회
-    async getQuestByCategory(category: string): Promise<Quest | undefined> {
+    async getChallengeByCategory(category: string): Promise<Quest | undefined> {
         return this.challengeRepository.findOne({ where: { category } });
     }
 
-    // // 새로운 도전과제 생성
-    // async createChallenge(challengeData: Partial<Quest>): Promise<Quest> {
-    //     const newChallenge = this.challengeRepository.create(challengeData);
-    //     return this.challengeRepository.save(newChallenge);
-    // }
+    // 새로운 도전과제 생성
+    async createChallenge(challengeData: Partial<Quest>): Promise<Quest> {
+        const newChallenge = this.challengeRepository.create(challengeData);
+        return this.challengeRepository.save(newChallenge);
+    }
 
-    // // 도전과제 삭제
-    // async deleteChallenge(id: number): Promise<void> {
-    //     await this.challengeRepository.delete(id);
-    // }
+    // 도전과제 삭제
+    async deleteChallenge(id: number): Promise<void> {
+        await this.challengeRepository.delete(id);
+    }
 }

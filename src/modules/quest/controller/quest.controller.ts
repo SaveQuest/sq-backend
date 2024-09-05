@@ -2,15 +2,15 @@ import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common'
 import { QuestService } from '../service/quest.service';
 import { Quest } from '../entity/quest.entity';
 
-@Controller('challenges')
+@Controller('quest')
 export class QuestController {
     constructor(private readonly challengeService: QuestService) {}
 
     // // 도전과제 조회
-    // @Get('daily')
-    // async getTopFiveChallen(): Promise<Quest[]> {
-    //     return this.challengeService.getTopFiveChallenges();
-    // }
+    @Get('daily')
+    async getTopFiveChallenge(): Promise<Quest[]> {
+        return this.challengeService.getTopFiveChallenges();
+    }
     //
     // // 특정 카테고리별
     // @Get(':category')

@@ -2,13 +2,11 @@
 import { Controller, Post, Param, Get, Body } from "@nestjs/common";
 import { ChallengeService } from "../service/challenge.service";
 import { Challenge } from "../entity/challenge.entity";
-import { FinishedChallengeService } from "@/modules/finished_challenge/service/finished_challengeservice";
 
 @Controller('challenges')
 export class ChallengeController {
     constructor(
         private readonly challengeService: ChallengeService,
-        private readonly finishedChallengeService: FinishedChallengeService,
     ) { }
 
     // 챌린지 목록을 가져오는 API
@@ -74,8 +72,8 @@ export class ChallengeController {
 
 
     // 유저 본인이 참가한 완료된 챌린지 조회
-    @Get('finished/:userId')
-    async getUserFinishedChallenges(@Param('userId') userId: number) {
-        return await this.finishedChallengeService.getUserFinishedChallenges(userId);
-    }
+    // @Get('finished/:userId')
+    // async getUserFinishedChallenges(@Param('userId') userId: number) {
+    //     return await this.finishedChallengeService.getUserFinishedChallenges(userId);
+    // }
 }
