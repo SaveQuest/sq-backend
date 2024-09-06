@@ -49,6 +49,10 @@ export class User {
         }
         return activeTags;
     }
+    
+    hasTag(tag: UserTag): boolean {
+        return (this.tags & tag) === tag;
+    }
 
     addTag(tag: UserTag) {
         this.tags |= tag;
