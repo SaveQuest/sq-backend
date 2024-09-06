@@ -2,13 +2,13 @@ import { Controller, Get, Post, Put, Delete, Param, Body, Request } from '@nestj
 import { QuestService } from '../service/quest.service';
 import { Quest } from '../entity/quest.entity';
 import { IncomingMessage } from "http";
-import { AlgorithmService } from "@/modules/quest/service/algorithm.service";
+import { AnalyzerService } from "@/modules/quest/service/analyzer.service";
 
 @Controller('quest')
 export class QuestController {
     constructor(
       private readonly questService: QuestService,
-      private readonly algorithmService: AlgorithmService,
+      private readonly algorithmService: AnalyzerService,
     ) {}
 
     // // 도전과제 조회
