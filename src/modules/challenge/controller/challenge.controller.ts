@@ -1,6 +1,7 @@
 // quest.controller.ts
 import { Controller, Post, Param, Get, Body } from "@nestjs/common";
 import { ChallengeService } from "@/modules/challenge/service/challenge.service";
+import { IncomingMessage } from 'http';
 
 @Controller('challenge')
 export class ChallengeController {
