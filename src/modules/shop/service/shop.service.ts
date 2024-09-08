@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In } from 'typeorm';
+import { Repository, In, MoreThan } from 'typeorm';
 import { Product } from '@/modules/shop/entity/product.entity';
 import { Review } from '@/modules/shop/entity/review.entity';
 
@@ -52,6 +52,33 @@ export class ShopService {
     });
   }
 
+  // 최신순 조회
+  // '최신'의 기준이 안 정해져서 일단 일주일로 해놓음
+  async getRecentProducts(): Promise<Product[]> {
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+    return this.productRepository.find({
+      where: {
+        createdAt: MoreThan(oneWeekAgo), // 일주일 내에 생성된 상품만 필터링
+      },
+      order: {
+        createdAt: 'DESC', 
+      },
+    });
+  }
+  
+  // 카테고리별 조회
+  // 우선 모든 상품 가져오게 해놓음
+  async getProductsByCategory(category: string): Promise<Product[]> {
+    return this.productRepository.find({
+      where: {
+        category, // 주어진 카테고리와 일치하는 상품만 필터링
+      },
+    });
+  }
+  
+ 
   async purchaseProducts(productIds: number[], userId: number): Promise<Product[]> {
     const products = await this.productRepository.find({
       where: { id: In(productIds) },
