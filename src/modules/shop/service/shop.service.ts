@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In, MoreThan } from 'typeorm';
+import { Repository, In, MoreThan, Like, Equal } from 'typeorm';
 import { Product } from '@/modules/shop/entity/product.entity';
 import { Review } from '@/modules/shop/entity/review.entity';
 
@@ -101,5 +101,42 @@ export class ShopService {
     user.points -= totalPrice;
     await this.userRepository.save(user);
     return products;
+  }
+
+
+    // 제목을 기준으로 상품 검색
+    async searchProductsByTitle(title: string): Promise<Product[]> {
+      return this.productRepository.find({
+        where: {
+          name: Like(`%${title}%`), // 제목에 검색어가 포함된 상품 필터링
+        },
+      });
+    }
+
+
+
+  // 가격이 정확히 일치하는 상품 가져오기
+  async getProductsByPrice(price: number): Promise<Product[]> {
+    return this.productRepository.find({
+      where: {
+        price: Equal(price),
+      },
+    });
+  }
+  
+
+  // 리뷰의 평균 rating이 특정 값과 일치하는 상품 가져오기
+  async getProductsByRating(rating: number): Promise<Product[]> {
+    const products = await this.productRepository.find({
+      relations: ['reviews'],
+    });
+
+    // 평균 rating이 정확히 일치하는 상품만 필터링
+    return products.filter(product => {
+      const averageRating = product.reviews.length
+        ? product.reviews.reduce((sum, review) => sum + review.rating, 0) / product.reviews.length
+        : 0;
+      return averageRating === rating;
+    });
   }
 }
