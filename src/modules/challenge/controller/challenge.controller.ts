@@ -70,29 +70,24 @@ export class ChallengeController {
     }
 
 
-    // 챌린지에 참가한 유저들의 소비 현황 순위 반환 API
-    // * typeorm jointable 오류 해결 안됨
-    // @Get(':id/rankings')
-    // @ApiOperation({
-    //     summary: "랭킹반환",
-    //     description: "현재 진행중인 챌린지에서 모든 참여자들의 순위를 리턴합니다.   -- 유저아이디 요청필요"
-    // })
-    // async getChallengeRankings(@Param('id') challengeId: number): Promise<any[]> {
-    //     return this.challengeService.getParticipantRankings(challengeId);
-    // }
+    @Get(':id/rankings')
+    @ApiOperation({
+        summary: "랭킹반환",
+        description: "현재 진행중인 챌린지에서 모든 참여자들의 순위를 리턴합니다.   -- 유저아이디 요청필요"
+    })
+    async getChallengeRankings(@Param('id') challengeId: number): Promise<any[]> {
+        return this.challengeService.getParticipantRankings(challengeId);
+    }
 
 
-    // // 우승자 계산 API
-    // 챌린지 종료시 그때 계산
-    //
-    // @Get(':id/winner')
-    // @ApiOperation({
-    //     summary: "챌린지 목록 조회",
-    //     description: "현재 진행중인 모든 챌린지들의 제목, 참가자 수, 상금, 기간, 입장비를 리턴합니다."
-    // })
-    // async getChallengeWinner(@Request() req: IncomingMessage): Promise<string> {
-    //     return this.challengeService.calculateWinner(req.userId);
-    // }
+    @Get(':id/winner')
+    @ApiOperation({
+        summary: "챌린지 목록 조회",
+        description: "현재 진행중인 모든 챌린지들의 제목, 참가자 수, 상금, 기간, 입장비를 리턴합니다."
+    })
+    async getChallengeWinner(@Request() req: IncomingMessage): Promise<string> {
+        return this.challengeService.calculateWinner(req.userId);
+    }
 
 
     // 챌린지를 종료하는 API
@@ -106,13 +101,12 @@ export class ChallengeController {
     }
 
 
-    // 유저 본인이 참가한 완료된 챌린지 조회
-    // @Get('finished/:userId')
-    // @ApiOperation({
-    //     summary: "종료된 챌린지 조회",
-    //     description: "참여 기록이 있는 종료된 챌린지 목록을 리턴합니다.  -- 유저아이디 요청필요"
-    // })
-    // async getUserFinishedChallenges(@Request() req: IncomingMessage) {
-    //     return await this.finishedChallengeService.getUserFinishedChallenges(req.userId);
-    // }
+    @Get('finished/:userId')
+    @ApiOperation({
+        summary: "종료된 챌린지 조회",
+        description: "참여 기록이 있는 종료된 챌린지 목록을 리턴합니다.  -- 유저아이디 요청필요"
+    })
+    async getUserFinishedChallenges(@Request() req: IncomingMessage) {
+        return await this.challengeService.getUserFinishedChallenges(req.userId);
+    }
 }
