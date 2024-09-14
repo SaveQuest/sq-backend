@@ -1,14 +1,15 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, Request } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Param, Request } from '@nestjs/common';
 import { QuestService } from '../service/quest.service';
 import { Quest } from '../entity/quest.entity';
+import { User } from '@/modules/user/entities/user.entity';
 import { IncomingMessage } from "http";
-import { AnalyzerService } from "@/modules/quest/service/analyzer.service";
+import { CardTransactionAnalyzerService } from "@/modules/quest/service/analyzer.service";
 
 @Controller('quest')
 export class QuestController {
     constructor(
       private readonly questService: QuestService,
-      private readonly algorithmService: AnalyzerService,
+      private readonly analyzerService: CardTransactionAnalyzerService,
     ) {}
 
     // // 도전과제 조회
@@ -24,15 +25,15 @@ export class QuestController {
     }
 
     // 도전과제 생성
-    @Post()
-    async createChallenge(@Request() req: IncomingMessage): Promise<Quest[]> {
-        return this.algorithmService.generateDailyQuests(req.userId);
-    }
+    // @Post()
+    // async createQuest(@Request() req: IncomingMessage): Promise<Quest[]> {
+    //     const
+    // }
 
-    @Post("checkStatus")
-    async checkQuestCompletion(@Request() req: IncomingMessage): Promise<void> {
-        await this.algorithmService.checkQuestCompletion(req.userId);
-    }
+    // @Post("checkStatus")
+    // async checkQuestCompletion(@Request() req: IncomingMessage): Promise<void> {
+    //     await this.algorithmService.checkQuestCompletion(req.userId);
+    // }
 
     // 도전과제 삭제
     @Delete(':id')

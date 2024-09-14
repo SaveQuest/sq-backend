@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Quest } from '../entity/quest.entity';
+import { User } from '@/modules/user/entities/user.entity';
 
 @Injectable()
 export class QuestService {
@@ -9,6 +10,8 @@ export class QuestService {
         @InjectRepository(Quest)
         private readonly challengeRepository: Repository<Quest>,
 
+        @InjectRepository(User)
+        private readonly userRepository: Repository<User>,
     ) {}
 
     // 도전과제 조회
@@ -35,5 +38,16 @@ export class QuestService {
     // 도전과제 삭제
     async deleteChallenge(id: number): Promise<void> {
         await this.challengeRepository.delete(id);
+    }
+
+    async getTransactionByUserId(userId: number): Promise<any> {
+        return this.challengeRepository
+            .createQueryBuilder("quest")
+            .leftJoinAndSelect("quest.participants", "participant")
+            .where("participant")
+    }
+
+    findUserById(userId: number) {
+        return this.userRepository.findOne({ where: { id: userId } })
     }
 }
