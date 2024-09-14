@@ -15,16 +15,11 @@ export class MileageController {
     ) {}
 
     // 카드 거래내역 업데이트
-    @Post('update')
+    @Post('updateTransaction')
     async updateCardHistory(
       @Request() req: IncomingMessage,
       @Body() usedAmountDto: UsedAmountDto[]
     ) {
         return await this.mileageService.updateCardHistory(req.userId, usedAmountDto);
     }
-
-    // @Get('update')
-    // async stackMileage(@Body() usedAmountDto: UsedAmountDto[]) {
-    //     return await this.mileageService.insertMileageByUsers(usedAmountDto);
-    // }
 }

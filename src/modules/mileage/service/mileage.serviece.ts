@@ -52,54 +52,6 @@ export class MileageService {
         return await this.userRepository.save(targetUser);
     }
 
-    // 사용자 ID로 사용자 조회
-    async findUserById(userId: number): Promise<User | undefined> {
-        return await this.userRepository.findOne({ where: { id: userId } });
-    }
-    //
-    // // 마일리지를 데이터베이스에 저장하는 메소드
-    // async insertMileageByUsers(usedAmountDto: UsedAmountDto): Promise<Mileage> {
-    //     const {
-    //         userId,
-    //         amount,
-    //         date,
-    //         cardIssuer,
-    //         approvalTime,
-    //         merchantName,
-    //         approvalNumber,
-    //         merchantCategory,
-    //         merchantId,
-    //         merchantBusinessNumber,
-    //     } = usedAmountDto;
-    //
-    //     // 해당 사용자 조회
-    //     const user = await this.findUserById(userId);
-    //     if (!user) {
-    //         throw new UserNotFoundException(userId);
-    //     }
-    //
-    //     if (amount <= 0) {
-    //         throw new InsufficientAmountException();
-    //     }
-    //
-    //     // 새로운 마일리지 엔티티 생성
-    //     const newMileage = new Mileage();
-    //     newMileage.userId = user;  // User 엔티티와 연결
-    //     newMileage.spend_at = date;  // 사용 날짜
-    //     newMileage.amount = amount;  // 결제 금액
-    //
-    //     newMileage.cardIssuer = cardIssuer;
-    //     newMileage.approvalTime = approvalTime;
-    //     newMileage.merchantName = merchantName;
-    //     newMileage.approvalNumber = approvalNumber;
-    //     newMileage.merchantCategory = merchantCategory;
-    //     newMileage.merchantId = merchantId;
-    //     newMileage.merchantBusinessNumber = merchantBusinessNumber;
-    //
-    //     // 마일리지 정보 저장
-    //     return await this.mileageRepository.save(newMileage);
-    // }
-    //
     // 특정 유저의 총 소비량 계산
     async getTotalMileageForUser(userId: number): Promise<number> {
         // 사용자 ID로 검색하는데, 올바른 관계 매핑 확인
