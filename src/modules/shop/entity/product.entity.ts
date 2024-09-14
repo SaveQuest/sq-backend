@@ -23,6 +23,9 @@ export class Product {
   @Column()
   price: number;
 
+  @Column()
+  category: string;
+
   @OneToMany(() => Review, (review) => review.product)
   reviews: Review[];
 
