@@ -2,8 +2,11 @@ import { Controller, Post, Get, Param, Body, Query } from '@nestjs/common';
 import { ShopService } from '@/modules/shop/service/shop.service';
 import { Product } from '@/modules/shop/entity/product.entity';
 import { Review } from '@/modules/shop/entity/review.entity';
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 
 @Controller('shop')
+@ApiTags("상점")
+@ApiBearerAuth("accessToken")
 export class ShopController {
   constructor(private readonly productService: ShopService) {}
 

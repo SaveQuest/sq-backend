@@ -24,10 +24,10 @@ export class QuestService {
         });
     }
 
-    // 특정 도전과제 조회
-    async getChallengeByCategory(category: string): Promise<Quest | undefined> {
-        return this.challengeRepository.findOne({ where: { category } });
-    }
+    // // 특정 도전과제 조회
+    // async getChallengeByCategory(category: string): Promise<Quest | undefined> {
+    //     return this.challengeRepository.findOne({ where: { category } });
+    // }
 
     // 새로운 도전과제 생성
     async createChallenge(challengeData: Partial<Quest>): Promise<Quest> {

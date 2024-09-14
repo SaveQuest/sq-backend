@@ -17,7 +17,7 @@ export class Quest {
     limitUsage: number;
 
     @Column()
-    category: string;
+    discriminator: string;
 
     @Column()
     reward: number;

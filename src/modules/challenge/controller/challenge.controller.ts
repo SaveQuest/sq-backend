@@ -1,10 +1,14 @@
 // quest.controller.ts
 import { Controller, Post, Param, Get, Request } from "@nestjs/common";
-import { ApiOperation } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ChallengeService } from "@/modules/challenge/service/challenge.service";
 import { IncomingMessage } from 'http';
 
 @Controller('challenge')
+@ApiTags("챌린지")
+@ApiBearerAuth(
+  "accessToken"
+)
 export class ChallengeController {
     constructor(
         private readonly challengeService: ChallengeService,

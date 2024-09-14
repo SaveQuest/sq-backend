@@ -3,13 +3,18 @@ import { QuestService } from '../service/quest.service';
 import { Quest } from '../entity/quest.entity';
 import { User } from '@/modules/user/entities/user.entity';
 import { IncomingMessage } from "http";
-import { CardTransactionAnalyzerService } from "@/modules/quest/service/analyzer.service";
+import { TransactionAnalysisService } from "@/modules/quest/service/analyzer.service";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 
 @Controller('quest')
+@ApiTags("도전과제")
+@ApiBearerAuth(
+  "accessToken"
+)
 export class QuestController {
     constructor(
       private readonly questService: QuestService,
-      private readonly analyzerService: CardTransactionAnalyzerService,
+      private readonly analyzerService: TransactionAnalysisService,
     ) {}
 
     // // 도전과제 조회
@@ -18,11 +23,11 @@ export class QuestController {
         return this.questService.getTopFiveChallenges();
     }
 
-    // 특정 카테고리별
-    @Get(':category')
-    async getChallengeByCategory(@Param('category') category: string): Promise<Quest> {
-        return this.questService.getChallengeByCategory(category);
-    }
+    // // 특정 카테고리별
+    // @Get(':category')
+    // async getChallengeByCategory(@Param('category') category: string): Promise<Quest> {
+    //     return this.questService.getChallengeByCategory(category);
+    // }
 
     // 도전과제 생성
     // @Post()

@@ -2,11 +2,12 @@
 import { Controller, Get, Post, Body, Request } from "@nestjs/common";
 import { MileageService } from '../service/mileage.serviece';
 import { UsedAmountDto } from '../dto/usedAmount.dto';
-import { ApiBearerAuth } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { IncomingMessage } from "http";
 
 
 @Controller('mileage')
+@ApiTags("결제내역 처리")
 @ApiBearerAuth('accessToken') 
 export class MileageController {
     constructor(
