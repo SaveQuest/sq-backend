@@ -17,32 +17,16 @@ export class QuestController {
       private readonly analyzerService: TransactionAnalysisService,
     ) {}
 
-    // // 도전과제 조회
-    @Get('daily')
-    async getTopFiveChallenge(): Promise<Quest[]> {
-        return this.questService.getTopFiveChallenges();
+    @Post('create')
+    async createQuest(@Request() req: IncomingMessage): Promise<Quest[]> {
+        return await this.analyzerService.createQuest(req.userId);
     }
 
-    // // 특정 카테고리별
-    // @Get(':category')
-    // async getChallengeByCategory(@Param('category') category: string): Promise<Quest> {
-    //     return this.questService.getChallengeByCategory(category);
-    // }
-
-    // 도전과제 생성
-    // @Post()
-    // async createQuest(@Request() req: IncomingMessage): Promise<Quest[]> {
-    //     const
-    // }
-
-    // @Post("checkStatus")
-    // async checkQuestCompletion(@Request() req: IncomingMessage): Promise<void> {
-    //     await this.algorithmService.checkQuestCompletion(req.userId);
-    // }
-
-    // 도전과제 삭제
-    @Delete(':id')
-    async deleteChallenge(@Param('id') id: number): Promise<void> {
-        return this.questService.deleteChallenge(id);
+    @Get()
+    async getQuestList(@Request() req: IncomingMessage): Promise<Quest[]> {
+        return await this.questService.getQuestList(req.userId);
     }
+
+
+
 }

@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable } from "@nestjs/common";
 import { Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 import { Mileage } from "@/modules/mileage/entity/mileage.entity";
 import { User } from "@/modules/user/entities/user.entity";
 import { Quest } from "@/modules/quest/entity/quest.entity";
@@ -36,6 +36,15 @@ export class TransactionAnalysisService {
     @InjectRepository(Quest)
     private readonly questRepository: Repository<Quest>,
   ) {
+  }
+
+  async createQuest(userId: number): Promise<Quest[]> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+    user.quests = await this.analyzeTransactions(user.mileage)
+    await this.questRepository.save(user.quests);
+    return user.quests;
   }
 
   @Category('편의점')
