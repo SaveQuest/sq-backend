@@ -7,6 +7,8 @@ export const envSchema = z.object({
     DATABASE_USERNAME: z.string(),
     DATABASE_PASSWORD: z.string(),
     DATABASE_NAME: z.string(),
+    SMS_API_KEY: z.string(),
+    SMS_API_SECRET: z.string(),
 })
 
 export const envValidator = {
