@@ -44,7 +44,7 @@ export class AuthService {
     }
 
     private async sendVerificationCode(phoneNumber: string, code: string) {
-        const message = `SaveQuest 인증번호입니다.\n${code}`
+        const message = `${code} is your SaveQuest verification code.`
         await this.smsService.sendSMS(phoneNumber, message)
     }
 

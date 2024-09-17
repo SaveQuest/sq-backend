@@ -28,7 +28,7 @@ export class SmsService {
                 console.error('Error sending message to Discord ', error);
             }
         } else if (env.NODE_ENV === 'production') {
-            const parsedPhoneNumber = parsePhoneNumber(phoneNumber);
+            const parsedPhoneNumber = parsePhoneNumber(phoneNumber, 'KR');
             if (!parsedPhoneNumber.isValid()) {
                 throw new InvalidPhoneNumberError();
             } else if (parsedPhoneNumber.country !== 'KR') {
