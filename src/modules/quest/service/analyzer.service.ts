@@ -93,7 +93,7 @@ export class TransactionAnalysisService {
 
       const targetAmount = Math.round(entry.amount * 0.7);
       challenges.push({
-        id: uuidv4(),
+        id: 0,
         name: `${entry.name}에서 ${targetAmount.toLocaleString()}원 이하로 쓰기`,
         description: `${entry.name}에서 ${targetAmount.toLocaleString()}원 이하로 사용하세요.`,
         limitUsage: targetAmount,
@@ -101,7 +101,7 @@ export class TransactionAnalysisService {
         reward: 50,
         deadline: oneMonthLater,
         createdAt: new Date(),
-        status: 'inProgress',
+        status: 'inProgress'
       });
     }
 
