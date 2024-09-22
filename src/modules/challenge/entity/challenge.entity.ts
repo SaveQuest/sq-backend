@@ -8,7 +8,7 @@ export class Challenge {
 
     // 챌린지 제목
     @Column()
-    title: string;
+    name: string;
 
     // 챌린지 참가비
     @Column({default:0})

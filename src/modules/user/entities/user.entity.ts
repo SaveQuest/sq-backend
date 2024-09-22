@@ -3,8 +3,16 @@ import { Quest } from "@/modules/quest/entity/quest.entity";
 import { Mileage } from "@/modules/mileage/entity/mileage.entity";
 import { Notification } from "@/modules/notification/entities/notification.entity";
 import { Exclude } from "class-transformer";
-import { Column, ManyToMany, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import axios from "axios";
+import {
+    Column,
+    ManyToMany,
+    ManyToOne,
+    CreateDateColumn,
+    Entity,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn,
+    JoinTable
+} from "typeorm";
 
 export enum UserTag {
     WELCOME = 1 << 0,
@@ -20,10 +28,11 @@ export class User {
     @Column({default: "홍길동"})
     name: string
 
-    @ManyToMany(() => Challenge, challenge => challenge.participants)
-    challenges: Challenge[];
+    @ManyToOne(() => Challenge, challenge => challenge.participants)
+    challenge: Challenge;
 
     @ManyToMany(() => Quest)
+    @JoinTable()
     quests: Quest[];
 
     @ManyToMany(() => Mileage)
@@ -40,6 +49,9 @@ export class User {
 
     @Column({ default: 0 })
     exp: number
+
+    @Column({ default: 1 })
+    level: number
 
     @Column({ type:"int", default: 4000 })
     points: number

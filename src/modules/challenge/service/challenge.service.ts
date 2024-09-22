@@ -1,4 +1,3 @@
-// // quest.services.ts
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
@@ -8,6 +7,7 @@ import { MileageService } from "@/modules/mileage/service/mileage.serviece";
 import { NotFoundChallengesException } from "../exception/NotFoundChallengesException";
 import { InsufficientEntryFeeException } from "../exception/InsufficientEntryFeeException";
 import { NotFinishedChallengeException } from "../exception/NotFinishedChallengeException";
+import { AlreadyParticipatingInChallengeException } from "@/modules/challenge/exception/AlreadyParticipatingInChallengeException";
 import { CreateChallengeDto } from '../dto/CreateChallenge.dto';
 
 @Injectable()
@@ -20,14 +20,16 @@ export class ChallengeService {
     private readonly mileageService: MileageService,
   ) {}
 
-  async getChallengeList(): Promise<any[]> {
+  async getChallengeList(userId: number): Promise<any[]> {
     const challenges = await this.challengeRepository.find({ relations: ['participants'] });
     return challenges.map(challenge => ({
-      title: challenge.title,
-      participantCount: challenge.participants.length,
-      prize: challenge.prize,
-      endDate: challenge.endDate.toLocaleDateString(),
+      id: challenge.id,
+      name: challenge.name,
+      people: challenge.participants.length,
+      totalReward: challenge.prize,
+      endsAt: challenge.endDate.toLocaleDateString(),
       entryFee: challenge.entryFee,
+      joined: challenge.participants.some(participant => participant.id === userId),
     }));
   }
 
@@ -46,12 +48,32 @@ export class ChallengeService {
     if (!challenge) {
       throw new NotFoundChallengesException();
     }
+
+    const rankings = [];
+    for (const participant of challenge.participants) {
+      const totalMileage = await this.mileageService.getTotalMileageForUser(participant.id);
+      const user = await this.userRepository.findOne({ where: { id: participant.id } });
+      rankings.push({
+        name: user.name,
+        level: user.level.toString(),
+        element: [
+          {
+            "name": "지금까지 사용한 금액",
+            "amount": totalMileage,
+          }
+        ]
+      });
+    }
+    rankings.sort((a, b) => a.totalMileage - b.totalMileage);
+    rankings.slice(0, 2);
+
     return {
-      title: challenge.title,
-      entryFee: challenge.entryFee,
-      prize: challenge.prize,
-      endDate: challenge.endDate,
-    };
+      id: challenge.id,
+      endsAt: challenge.endDate,
+      ranking: rankings,
+      people: challenge.participants.length,
+      totalReward: challenge.prize,
+    }
   }
 
   async addParticipant(id: number, userId: number): Promise<any> {
@@ -62,9 +84,13 @@ export class ChallengeService {
       throw new NotFoundChallengesException();
     }
 
-    // if (user.points <= challenge.entryFee) {
-    //   throw new InsufficientEntryFeeException();
-    // }
+    if (challenge.participants.some(participant => participant.id === userId)) {
+      throw new AlreadyParticipatingInChallengeException();
+    }
+
+    if (user.points <= challenge.entryFee) {
+      throw new InsufficientEntryFeeException();
+    }
 
     user.points -= challenge.entryFee;
     challenge.participants.push(user);
@@ -72,22 +98,9 @@ export class ChallengeService {
     await this.challengeRepository.save(challenge);
     await this.userRepository.save(user);
 
-    return { message: `${user.phoneNumber}님이 ${challenge.title}에 참가하였습니다.` };
+    return { message: `${user.phoneNumber}님이 ${challenge.name}에 참가하였습니다.` };
   }
 
-  async createChallenge(createChallengeDto: CreateChallengeDto): Promise<Challenge> {
-    const { title, entryFee, prize, isFinished, endDate } = createChallengeDto;
-
-    const newChallenge = this.challengeRepository.create({
-      title,
-      entryFee,
-      prize,
-      isFinished,
-      endDate,
-    });
-
-    return await this.challengeRepository.save(newChallenge);
-  }
 
   async getParticipantRankings(id: number): Promise<any[]> {
     const challenge = await this.challengeRepository.findOne({ where: { id }, relations: ['participants'] });
@@ -98,14 +111,20 @@ export class ChallengeService {
     const rankings = [];
     for (const participant of challenge.participants) {
       const totalMileage = await this.mileageService.getTotalMileageForUser(participant.id);
+      const user = await this.userRepository.findOne({ where: { id: participant.id } });
       rankings.push({
-        userId: participant.id,
-        totalMileage: totalMileage,
+        name: user.name,
+        level: user.level.toString(),
+        element: [
+          {
+            "name": "지금까지 사용한 금액",
+            "amount": totalMileage,
+          }
+        ]
       });
     }
 
     rankings.sort((a, b) => a.totalMileage - b.totalMileage);
-
     return rankings;
   }
 
@@ -169,7 +188,7 @@ export class ChallengeService {
     challenge.isFinished = true;
     await this.challengeRepository.save(challenge);
 
-    return { message: `${challenge.title} 챌린지가 완료되었습니다. ${winner.phoneNumber}님이 우승하셨습니다!` };
+    return { message: `${challenge.name} 챌린지가 완료되었습니다. ${winner.phoneNumber}님이 우승하셨습니다!` };
 }
 
 
