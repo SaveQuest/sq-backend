@@ -1,7 +1,11 @@
 import { z } from "zod"
 
 export const envSchema = z.object({
-    NODE_ENV: z.union([z.literal("development"), z.literal("production")]),
+    NODE_ENV: z.union([
+      z.literal("development"),
+      z.literal("production"),
+      z.literal("development:no-drop-tables")
+    ]),
     DATABASE_HOST: z.string(),
     DATABASE_PORT: z.coerce.number(),
     DATABASE_USERNAME: z.string(),
