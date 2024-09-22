@@ -6,7 +6,6 @@ import { User } from "@/modules/user/entities/user.entity";
 import { Mileage } from "../entity/mileage.entity";
 import { UsedAmountDto } from "../dto/usedAmount.dto";
 import { UserNotFoundException } from "../exception/UserNotFoundException";
-import { InsufficientAmountException } from "../exception/InsufficientAmountException";
 
 @Injectable()
 export class MileageService {
@@ -27,7 +26,7 @@ export class MileageService {
         }
 
         // 사용자의 마일리지 정보를 업데이트
-        const saveCardHistory = cardHistory.map(async (history) => {
+        targetUser.mileage = cardHistory.map((history) => {
             const newMileage = new Mileage();
             newMileage.spend_at = history.date;
             newMileage.amount = history.amount;
@@ -39,16 +38,8 @@ export class MileageService {
             newMileage.merchantId = history.merchantId;
             newMileage.merchantBusinessNumber = history.merchantBusinessNumber;
             targetUser.dailyUsage += history.amount;
-            await this.mileageRepository.save(newMileage);
-
             return newMileage;
         });
-
-        const savedCardHistory = await Promise.all(saveCardHistory);
-        savedCardHistory.forEach((history) => {
-            targetUser.mileage.push(history);
-        });
-
         return await this.userRepository.save(targetUser);
     }
 
