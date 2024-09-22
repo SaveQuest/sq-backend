@@ -17,17 +17,7 @@ export class SmsService {
     private readonly smsApiUrl = 'https://rest.nexmo.com/sms/json';
 
     async sendSMS(phoneNumber: string, message: string) {
-        if (env.NODE_ENV === 'development') {
-            const discordMessage = {
-                content: `Phone Number: ${phoneNumber}\nMessage: ${message}`,
-            };
-
-            try {
-                await axios.post(this.webhookUrl, discordMessage);
-            } catch (error) {
-                console.error('Error sending message to Discord ', error);
-            }
-        } else if (env.NODE_ENV === 'production') {
+        if (env.NODE_ENV === 'production') {
             const parsedPhoneNumber = parsePhoneNumber(phoneNumber, 'KR');
             if (!parsedPhoneNumber.isValid()) {
                 throw new InvalidPhoneNumberError();
@@ -46,6 +36,16 @@ export class SmsService {
                     console.error('Error sending SMS ' + parsedPhoneNumber.formatInternational(), error);
                     throw new MessageSendFailureError();
                 }
+            }
+        } else {
+            const discordMessage = {
+                content: `Phone Number: ${phoneNumber}\nMessage: ${message}`,
+            };
+
+            try {
+                await axios.post(this.webhookUrl, discordMessage);
+            } catch (error) {
+                console.error('Error sending message to Discord ', error);
             }
         }
     }

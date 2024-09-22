@@ -21,10 +21,10 @@ export class StaticFileService {
 
   async StaticFile(userId: number, path: string) {
     const user = await this.userRepository.findOne({
-      where: { id: userId }, select: ["staticFileRequestKey"]
+      where: { id: userId }, select: ["id", "staticFileRequestKey"]
     })
 
-    if (user.staticFileRequestKey === null) {
+    if (!user.staticFileRequestKey) {
       user.staticFileRequestKey = await this.generateStaticFileRequestKey(userId);
       await this.userRepository.save(user);
     }

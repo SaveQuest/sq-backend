@@ -22,21 +22,15 @@ export class UserService {
         if (user !== null) return user
 
         return await this.userRepository.save({
-            phoneNumber,
+            phoneNumber, name: "홍길동"
         })
     }
 
     async getDSTHeader(userId: number) {
-        return await this.userRepository.createQueryBuilder('user')
-          .select(['user.id', 'user.name', 'user.points'])
-          .addSelect(subQuery => {
-              return subQuery
-                .select('COUNT(notification.id)', 'notificationCount')
-                .from('notification', 'notification')
-                .where('notification.userId = user.id');
-          }, 'notificationCount')
-          .where('user.id = :userId', { userId })
-          .getRawOne()
+        const user = await this.userRepository.findOne({where: {id: userId}, select: ["name", "points", "notifications"] });
+        return {
+            id: userId, name: user.name, points: user.points, notificationCount: user.notifications?.length || 0
+        }
     }
 
     async getDSTHome(userId: number) {

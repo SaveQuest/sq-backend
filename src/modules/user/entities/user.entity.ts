@@ -17,7 +17,7 @@ export class User {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column()
+    @Column({default: "홍길동"})
     name: string
 
     @ManyToMany(() => Challenge, challenge => challenge.participants)
