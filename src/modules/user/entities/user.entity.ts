@@ -1,8 +1,10 @@
 import { Challenge } from "@/modules/challenge/entity/challenge.entity";
 import { Quest } from "@/modules/quest/entity/quest.entity";
 import { Mileage } from "@/modules/mileage/entity/mileage.entity";
+import { Notification } from "@/modules/notification/entities/notification.entity";
 import { Exclude } from "class-transformer";
 import { Column, ManyToMany, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import axios from "axios";
 
 export enum UserTag {
     WELCOME = 1 << 0,
@@ -15,14 +17,20 @@ export class User {
     @PrimaryGeneratedColumn()
     id: number
 
+    @Column()
+    name: string
+
     @ManyToMany(() => Challenge, challenge => challenge.participants)
     challenges: Challenge[];
 
     @ManyToMany(() => Quest)
     quests: Quest[];
 
-    @ManyToMany(() => Quest)
+    @ManyToMany(() => Mileage)
     mileage: Mileage[];
+
+    @ManyToMany(() => Notification)
+    notifications: Notification[];
 
     @Column({ default: 0 })
     dailyUsage: number
@@ -38,6 +46,9 @@ export class User {
 
     @Column({ type: "int", default: 0 })
     tags: number
+
+    @Column({ nullable: true})
+    staticFileRequestKey: string
 
     getTags(): UserTag[] {
         const activeTags: UserTag[] = [];

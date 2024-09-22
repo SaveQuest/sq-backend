@@ -9,6 +9,7 @@ export const envSchema = z.object({
     DATABASE_NAME: z.string(),
     SMS_API_KEY: z.string(),
     SMS_API_SECRET: z.string(),
+    STATIC_FILE_ADMIN_KEY: z.string(),
 })
 
 export const envValidator = {

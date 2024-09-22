@@ -3,12 +3,14 @@ import { Repository } from "typeorm";
 import { User } from "../entities/user.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Transactional } from "typeorm-transactional";
+import { StaticFileService } from "@/modules/staticfile/service/staticfile.service";
 
 @Injectable()
 export class UserService {
     constructor(
         @InjectRepository(User)
-        private readonly userRepository: Repository<User>
+        private readonly userRepository: Repository<User>,
+        private readonly staticFileService: StaticFileService,
     ) { }
 
     @Transactional()
@@ -22,6 +24,43 @@ export class UserService {
         return await this.userRepository.save({
             phoneNumber,
         })
+    }
+
+    async getDSTHeader(userId: number) {
+        return await this.userRepository.createQueryBuilder('user')
+          .select(['user.id', 'user.name', 'user.points'])
+          .addSelect(subQuery => {
+              return subQuery
+                .select('COUNT(notification.id)', 'notificationCount')
+                .from('notification', 'notification')
+                .where('notification.userId = user.id');
+          }, 'notificationCount')
+          .where('user.id = :userId', { userId })
+          .getRawOne()
+    }
+
+    async getDSTHome(userId: number) {
+        return {
+            id: userId,
+            elements: [
+                {
+                    type: "CAROUSEL_BASIC_CARD",
+                    content: {
+                        topRowText: "SaveQuest 정식 출시",
+                        bottomRowText: "Play Store에서 SaveQuest 리뷰 남기기"
+                    },
+                    right: {
+                        imageUri: await this.staticFileService.StaticFile(
+                          userId, "/dstCarouselImage/70a3ceae-d5dc-463e-a98b-48d6243a6a80.png"
+                        )
+                    },
+                    handler: {
+                        type: "WEBLINK",
+                        url: "https://play.google.com/store/apps/details?id=me.ychan.savequest"
+                    }
+                }
+            ]
+        }
     }
 
     findUserById(userId: number) {
