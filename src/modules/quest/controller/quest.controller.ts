@@ -5,6 +5,7 @@ import { User } from '@/modules/user/entities/user.entity';
 import { IncomingMessage } from "http";
 import { TransactionAnalysisService } from "@/modules/quest/service/analyzer.service";
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { QuestDST } from "@/modules/quest/interface";
 
 @Controller('quest')
 @ApiTags("도전과제")
@@ -16,6 +17,11 @@ export class QuestController {
       private readonly questService: QuestService,
       private readonly analyzerService: TransactionAnalysisService,
     ) {}
+
+    @Get('dst')
+    async getDst(@Request() req: IncomingMessage): Promise<QuestDST> {
+        return await this.questService.getDst(req.userId);
+    }
 
     @Get("list")
     @ApiOperation({
@@ -45,7 +51,7 @@ export class QuestController {
       @Request() req: IncomingMessage,
       @Headers('X-DUMMY-MODE') isDummyMode: boolean,
     ): Promise<Quest[]> {
-        return await this.questService.getQuestList(req.userId);
+        return await this.questService.getActiveQuestList(req.userId);
     }
 
     @Post('create')

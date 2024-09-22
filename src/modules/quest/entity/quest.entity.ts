@@ -14,6 +14,9 @@ export class Quest {
     description: string;
 
     @Column('int')
+    totalUsage: number;
+
+    @Column('int')
     limitUsage: number;
 
     @Column()
