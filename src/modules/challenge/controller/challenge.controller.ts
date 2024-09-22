@@ -1,6 +1,6 @@
 // quest.controller.ts
 import { Controller, Post, Param, Get, Request } from "@nestjs/common";
-import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { ChallengeService } from "@/modules/challenge/service/challenge.service";
 import { IncomingMessage } from 'http';
 
@@ -26,10 +26,23 @@ export class ChallengeController {
 
 
     // 유저 본인이 참가 중인 챌린지 조회
-    @Get('active/:userId')
+    @Get('active')
     @ApiOperation({
         summary: "참가한 진행중인 챌린지 조회",
         description: "유저가 참가한 챌린지중 진행중인 챌린지만을 리턴합니다.  -- 유저아이디 요청필요"
+    })
+    @ApiResponse({
+        status: 200,
+        description: "참가중인 챌린지 조회 성공",
+        content: {
+            "application/json": {
+                example: {
+                    "name": "한달동안 평균 소비 금액 줄이기",
+                    "endsAt": "2021-10-31T23:59:59.000Z",
+                    "monthlyUsage": 0,
+                }
+            }
+        }
     })
     async getUserActiveChallenges(@Request() req: IncomingMessage) {
         return await this.challengeService.getUserActiveChallenges(req.userId);
