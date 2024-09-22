@@ -99,6 +99,7 @@ export class TransactionAnalysisService {
         limitUsage: targetAmount,
         discriminator: entry.isCategory ? `category:${entry.name}` : `name:${entry.name}`,
         reward: 50,
+        totalUsage: 0,
         deadline: oneMonthLater,
         createdAt: new Date(),
         status: 'inProgress'

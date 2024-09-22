@@ -13,7 +13,7 @@ export class UserController {
         private readonly userService: UserService
     ) {}
 
-    @Get("header")
+    @Get("dst/header")
     @ApiOperation({
         summary: "헤더 정보",
         description: "헤더 정보를 조회합니다. (로그인 필요)"
