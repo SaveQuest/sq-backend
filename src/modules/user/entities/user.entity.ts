@@ -2,6 +2,7 @@ import { Challenge } from "@/modules/challenge/entity/challenge.entity";
 import { Quest } from "@/modules/quest/entity/quest.entity";
 import { Mileage } from "@/modules/mileage/entity/mileage.entity";
 import { Notification } from "@/modules/notification/entities/notification.entity";
+import { InventoryItem } from "@/modules/inventory/entities/inventory.entity";
 import { Exclude } from "class-transformer";
 import {
     Column,
@@ -59,31 +60,18 @@ export class User {
     @Column({ type: "int", default: 0 })
     tags: number
 
+    @Column({ nullable: true })
+    titleBadge: string
+
+    @Column({ nullable: true })
+    profileImageId: string
+
     @Column({ nullable: true})
     staticFileRequestKey: string
 
-    getTags(): UserTag[] {
-        const activeTags: UserTag[] = [];
-        for (const tag in UserTag) {
-            const tagValue = parseInt(tag, 10);
-            if (!isNaN(tagValue) && (this.tags & tagValue) === tagValue) {
-                activeTags.push(tagValue);
-            }
-        }
-        return activeTags;
-    }
-    
-    hasTag(tag: UserTag): boolean {
-        return (this.tags & tag) === tag;
-    }
-  
-    addTag(tag: UserTag) {
-        this.tags |= tag;
-    }
-
-    removeTag(tag: UserTag) {
-        this.tags &= ~tag;
-    }
+    @ManyToMany(() => InventoryItem)
+    @JoinTable()
+    inventory: InventoryItem[]
 
     @Column({ unique: true })
     phoneNumber: string
@@ -95,4 +83,10 @@ export class User {
     @Exclude()
     @UpdateDateColumn({ type: "timestamptz" })
     updated_at: Date;
+
+    @Column({ default: 0 })
+    totalSavedUsage: number
+
+    @Column({ default: {quest: 0, challenge: 0} })
+    totalEarned: {quest: number, challenge: number}
 }

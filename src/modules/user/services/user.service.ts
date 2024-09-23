@@ -26,6 +26,31 @@ export class UserService {
         })
     }
 
+    async getProfile(userId: number) {
+        const user = await this.userRepository.findOne({ where: { id: userId } , relations: ['quests']});
+        return {
+            id: userId,
+            name: user.name,
+            level: user.level,
+            tag: user.titleBadge,
+            profileImage: user.profileImageId ? await this.staticFileService.StaticFile(userId, user.profileImageId) : null,
+            element: [
+                {
+                    name: "지금까지 줄인 소비금액",
+                    value: `₩ ${user.totalSavedUsage.toLocaleString('ko-KR')}`
+                }, {
+                    name: "성공한 도전과제",
+                    value: `${user.quests.filter(q => q.status === "completed").length}개`
+                }
+            ],
+            questLog: {
+                totalEarned: user.totalEarned.quest,
+                totalCompleted: user.quests.filter(q => q.status === "completed").length,
+                totalFailed: user.quests.filter(q => q.status === "failed").length,
+            }
+        }
+    }
+
     async getDSTHeader(userId: number) {
         const user = await this.userRepository.findOne({where: {id: userId}, select: ["name", "points", "notifications"] });
         return {
@@ -44,9 +69,7 @@ export class UserService {
                         bottomRowText: "Play Store에서 SaveQuest 리뷰 남기기"
                     },
                     right: {
-                        imageUri: await this.staticFileService.StaticFile(
-                          userId, "/dstCarouselImage/70a3ceae-d5dc-463e-a98b-48d6243a6a80.png"
-                        )
+                        imageUri: await this.staticFileService.StaticFile(userId, "/dstCarouselImage/70a3ceae-d5dc-463e-a98b-48d6243a6a80.png")
                     },
                     handler: {
                         type: "WEBLINK",

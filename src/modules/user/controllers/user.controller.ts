@@ -13,6 +13,11 @@ export class UserController {
         private readonly userService: UserService
     ) {}
 
+    @Get("profile")
+    async profile(@Request() req: IncomingMessage) {
+        return await this.userService.getProfile(req.userId)
+    }
+
     @Get("dst/header")
     @ApiOperation({
         summary: "헤더 정보",
