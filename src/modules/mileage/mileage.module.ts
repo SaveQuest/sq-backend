@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Mileage } from './entity/mileage.entity';
-import { MileageService } from './service/mileage.serviece';
+import { MileageService } from './service/mileage.service';
 import { MileageController } from './controller/mileage.controller';
 import { UserModule } from '../user/user.module';
 

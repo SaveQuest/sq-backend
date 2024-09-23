@@ -1,6 +1,6 @@
 // mileage.controller.ts
 import { Controller, Get, Post, Body, Request } from "@nestjs/common";
-import { MileageService } from '../service/mileage.serviece';
+import { MileageService } from '../service/mileage.service';
 import { UsedAmountDto } from '../dto/usedAmount.dto';
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { IncomingMessage } from "http";
@@ -14,12 +14,16 @@ export class MileageController {
         private readonly mileageService: MileageService
     ) {}
 
-    // 카드 거래내역 업데이트
     @Post('updateTransaction')
     async updateCardHistory(
       @Request() req: IncomingMessage,
       @Body() usedAmountDto: UsedAmountDto[]
     ) {
-        return await this.mileageService.updateCardHistory(req.userId, usedAmountDto);
+        return await this.mileageService.updateCardHistory(req.userId, usedAmountDto.reverse());
+    }
+
+    @Get('lastApprovalTime')
+    async getLastApprovalTime(@Request() req: IncomingMessage) {
+        return await this.mileageService.getLastApprovalTime(req.userId);
     }
 }
