@@ -26,7 +26,7 @@ export class MileageService {
     }
 
     async getLastApprovalTime(userId: number) {
-        const targetUser = await this.userRepository.findOne({ where: { id: userId } });
+        const targetUser = await this.userRepository.findOne({ where: { id: userId } , relations: ['mileage']});
         if (!targetUser) {
             throw new UserNotFoundException(userId);
         }
