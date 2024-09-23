@@ -15,12 +15,6 @@ import {
     JoinTable
 } from "typeorm";
 
-export enum UserTag {
-    WELCOME = 1 << 0,
-    ADMIN = 1 << 1,
-    TEST_TAG = 1 << 2,
-}
-
 @Entity()
 export class User {
     @PrimaryGeneratedColumn()
@@ -36,7 +30,15 @@ export class User {
     @JoinTable()
     quests: Quest[];
 
+    @ManyToMany(() => Quest)
+    @JoinTable()
+    generatedQuests: Quest[];
+
+    @CreateDateColumn({ type: "timestamptz" , default: 0})
+    lastQuestGeneratedAt: Date;
+
     @ManyToMany(() => Mileage)
+    @JoinTable()
     mileage: Mileage[];
 
     @ManyToMany(() => Notification)
@@ -87,6 +89,18 @@ export class User {
     @Column({ default: 0 })
     totalSavedUsage: number
 
-    @Column({ default: {quest: 0, challenge: 0} })
+    @Column(
+      {
+          type: 'jsonb',
+          default: {quest: 0, challenge: 0}
+      }
+    )
     totalEarned: {quest: number, challenge: number}
+
+    @Column({type: 'jsonb', default: {
+        isProfilePublic: false
+    } })
+    metadata: {
+        isProfilePublic: boolean
+    }
 }

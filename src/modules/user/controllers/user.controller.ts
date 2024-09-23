@@ -1,7 +1,9 @@
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from "@nestjs/swagger";
-import { Controller, Get, Request } from '@nestjs/common';
+import { Body, Controller, Get, Post, Request, UploadedFile, UseInterceptors } from "@nestjs/common";
 import { UserService } from '../services/user.service';
 import { IncomingMessage } from 'http';
+import { UpdateProfileData } from "@/modules/user/dto/updateProfileData";
+import { FileInterceptor } from "@nestjs/platform-express";
 
 @Controller('user')
 @ApiTags("사용자")
@@ -16,6 +18,20 @@ export class UserController {
     @Get("profile")
     async profile(@Request() req: IncomingMessage) {
         return await this.userService.getProfile(req.userId)
+    }
+
+    @Post("profile")
+    async updateProfile(@Request() req: IncomingMessage, @Body() data: UpdateProfileData) {
+        return await this.userService.updateProfile(req.userId, data)
+    }
+
+    @Post("profile/image")
+    @UseInterceptors(FileInterceptor('file'))
+    async setProfileImage(
+      @Request() req: IncomingMessage,
+      @UploadedFile() file: Express.Multer.File
+    ) {
+        return await this.userService.setProfileImage(req.userId, file)
     }
 
     @Get("dst/header")

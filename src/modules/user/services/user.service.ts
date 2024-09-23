@@ -4,6 +4,7 @@ import { User } from "../entities/user.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Transactional } from "typeorm-transactional";
 import { StaticFileService } from "@/modules/staticfile/service/staticfile.service";
+import { UpdateProfileData } from "@/modules/user/dto/updateProfileData";
 
 @Injectable()
 export class UserService {
@@ -13,17 +14,58 @@ export class UserService {
         private readonly staticFileService: StaticFileService,
     ) { }
 
+    getRandomElement<T>(arr: T[]): T {
+        return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    generateRandomNickname(): string {
+        const adjectives = [
+            "절약하는", "주식하는", "공부하는", "절약왕", "용감한", "계획적인", "성살한",
+        ];
+
+        const animals = [
+            "코알라", "토끼", "호랑이", "펭귄", "북극곰", "사자", "여우", "늑대", "고양이"
+        ];
+
+        const numbers = Math.floor(Math.random() * 100);
+
+        const adjective = this.getRandomElement(adjectives);
+        const animal = this.getRandomElement(animals);
+
+        return `${adjective}${animal}${numbers}`;
+    }
+
     @Transactional()
     async getUserOrCreate(phoneNumber: string) {
         const user = await this.userRepository.findOne({
             where: { phoneNumber }
         })
 
-        if (user !== null) return user
+        if (user !== null) return {
+            user, newUser: false
+        }
 
-        return await this.userRepository.save({
-            phoneNumber, name: "홍길동"
+        const newUserEntity = await this.userRepository.save({
+            phoneNumber, name: this.generateRandomNickname()
         })
+        return {
+            user: newUserEntity, newUser: true
+        }
+    }
+
+    async updateProfile(userId: number, data: UpdateProfileData) {
+        const user = await this.userRepository.findOne({ where: { id: userId } })
+        if (!!data.name) {
+            user.name = data.name
+        }
+        if (!!data.isProfilePublic) {
+            user.metadata.isProfilePublic = data.isProfilePublic
+        }
+        await this.userRepository.save(user)
+    }
+
+    async setProfileImage(userId: number, file: Express.Multer.File) {
+        // TODO: r2 bucket 연동하기
     }
 
     async getProfile(userId: number) {
