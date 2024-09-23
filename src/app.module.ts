@@ -35,7 +35,7 @@ import { SeedingModule } from './modules/seeding/seeding.module';
     AuthModule,
     SmsModule,
     SeedingModule,
-    ChallengeModule,
+    // ChallengeModule,
     ShopModule,
     MileageModule,
     QuestModule,
