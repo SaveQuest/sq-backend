@@ -120,7 +120,7 @@ export class ChallengeController {
     }
 
 
-    @Get('finished/:userId')
+    @Get('finished')
     @ApiOperation({
         summary: "종료된 챌린지 조회",
         description: "참여 기록이 있는 종료된 챌린지 목록을 리턴합니다.  -- 유저아이디 요청필요"
