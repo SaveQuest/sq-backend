@@ -3,7 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Challenge } from "../entity/challenge.entity";
 import { User } from "@/modules/user/entities/user.entity";
-import { MileageService } from "@/modules/mileage/service/mileage.serviece";
+import { MileageService } from "@/modules/mileage/service/mileage.service";
 import { NotFoundChallengesException } from "../exception/NotFoundChallengesException";
 import { InsufficientEntryFeeException } from "../exception/InsufficientEntryFeeException";
 import { NotFinishedChallengeException } from "../exception/NotFinishedChallengeException";
