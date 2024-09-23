@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToMany } from 'typeorm';
-import { Review } from './review.entity';
 import { Exclude } from "class-transformer";
+
+export type ProductCategory = 'character' | 'pet' | 'background' | 'randomBox'
 
 @Entity()
 export class Product {
@@ -11,22 +12,22 @@ export class Product {
   @Column()
   name: string;
 
-  @Column({default: ''})
-  description: string;
-
   @Column()
-  imageId: string; // r2의 imageId
-
-  @CreateDateColumn({ type: 'timestamptz' })
-  createdAt: Date;
+  description: string;
 
   @Column()
   price: number;
 
   @Column()
-  category: string;
+  imageId: string;
 
-  @OneToMany(() => Review, (review) => review.product)
-  reviews: Review[];
+  @Column()
+  category: ProductCategory;
+
+  @Column()
+  isAvailable: boolean;
+
+  @Column({ nullable: true })
+  metadata?: Record<string, any>;
 
 }

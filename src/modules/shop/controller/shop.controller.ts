@@ -2,7 +2,6 @@ import { Controller, Post, Get, Param, Body, Query, Request } from "@nestjs/comm
 import { ShopService } from '@/modules/shop/service/shop.service';
 import { Product, ProductCategory } from "@/modules/shop/entity/product.entity";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
-import { StaticFileService } from "@/modules/staticfile/service/staticfile.service";
 import { IncomingMessage } from "http";
 
 @Controller('store')
