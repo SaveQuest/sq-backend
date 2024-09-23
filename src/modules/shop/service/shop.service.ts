@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In, MoreThan, Like, Equal } from 'typeorm';
-import { Product } from '@/modules/shop/entity/product.entity';
-import { Review } from '@/modules/shop/entity/review.entity';
+import { Product, ProductCategory } from "@/modules/shop/entity/product.entity";
 
 import { ProductNotFoundException } from "@/modules/shop/exception/ProductNotFoundException";
 import { InsufficientPointsException } from "@/modules/shop/exception/InsufficientPointsException";
 import { User } from "@/modules/user/entities/user.entity";
+import { StaticFileService } from "@/modules/staticfile/service/staticfile.service";
 
 @Injectable()
 export class ShopService {
@@ -15,76 +15,58 @@ export class ShopService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Product)
     private productRepository: Repository<Product>,
-    @InjectRepository(Review)
-    private reviewRepository: Repository<Review>,
+    private readonly staticFileService: StaticFileService,
   ) {}
 
-  // async createProduct(name: string, price: number, description: string): Promise<Product> {
-  //   const product = this.productRepository.create({ name, price, description });
-  //   return this.productRepository.save(product);
-  // }
 
-  async addReview(productId: number, content: string, rating: number): Promise<Review> {
+  // 카테고리별 조회
+  // 우선 모든 상품 가져오게 해놓음
+  async getProductsByCategory(userId: number, category: ProductCategory): Promise<Record<string, any>> {
+    const products = await this.productRepository.find({
+      where: {
+        category,
+      },
+    });
+    const result = products.map(async (product) => {
+      return {
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: await this.staticFileService.StaticFile(userId, `storeProduct/${product.imageId}.png`),
+      };
+    });
+
+    return {
+      products: await Promise.all(result),
+    }
+  }
+
+  async getProductById(userId: number, productId: number): Promise<Record<string, any>> {
     const product = await this.productRepository.findOne({
       where: { id: productId },
-      relations: ['reviews'],
     });
 
     if (!product) {
       throw new ProductNotFoundException();
     }
 
-    const review = this.reviewRepository.create({ content, rating, product });
-    return this.reviewRepository.save(review);
-  }
-
-  // 상품과 리뷰 목록 가져오기
-  async getProductWithReviews(productId: number): Promise<Product> {
-    return this.productRepository.findOne({
-      where: { id: productId },
-      relations: ['reviews'],
-    });
-  }
-
-  async getProductsByIds(ids: number[]): Promise<Product[]> {
-    return this.productRepository.find({
-      where: { id: In(ids) }, // In()을 사용하여 여러 ID 조건 전달
-    });
-  }
-
-  // 최신순 조회
-  // '최신'의 기준이 안 정해져서 일단 일주일로 해놓음
-  async getRecentProducts(): Promise<Product[]> {
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-
-    return this.productRepository.find({
-      where: {
-        createdAt: MoreThan(oneWeekAgo), // 일주일 내에 생성된 상품만 필터링
-      },
-      order: {
-        createdAt: 'DESC', 
-      },
-    });
-  }
-  
-  // 카테고리별 조회
-  // 우선 모든 상품 가져오게 해놓음
-  async getProductsByCategory(category: string): Promise<Product[]> {
-    return this.productRepository.find({
-      where: {
-        category, // 주어진 카테고리와 일치하는 상품만 필터링
-      },
-    });
+    return {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: await this.staticFileService.StaticFile(userId, `storeProduct/${product.imageId}.png`),
+      description: product.description,
+      isPurchasable: product.isAvailable,
+    };
   }
   
  
-  async purchaseProducts(productIds: number[], userId: number): Promise<Product[]> {
-    const products = await this.productRepository.find({
-      where: { id: In(productIds) },
+  async purchaseProduct(productId: number, userId: number): Promise<Record<string, string>> {
+    const product = await this.productRepository.findOne({
+      where: { id: productId },
     });
 
-    if (!products.length) {
+    if (!product) {
       throw new ProductNotFoundException();
     }
 
@@ -92,51 +74,13 @@ export class ShopService {
       where: { id: userId },
     });
 
-    const totalPrice = products.reduce((sum, product) => sum + product.price, 0);
 
-    if (user.points < totalPrice) {
+    if (user.points < product.price) {
       throw new InsufficientPointsException();
     }
 
-    user.points -= totalPrice;
+    user.points -= product.price;
     await this.userRepository.save(user);
-    return products;
-  }
-
-
-    // 제목을 기준으로 상품 검색
-    async searchProductsByTitle(title: string): Promise<Product[]> {
-      return this.productRepository.find({
-        where: {
-          name: Like(`%${title}%`), // 제목에 검색어가 포함된 상품 필터링
-        },
-      });
-    }
-
-
-
-  // 가격이 정확히 일치하는 상품 가져오기
-  async getProductsByPrice(price: number): Promise<Product[]> {
-    return this.productRepository.find({
-      where: {
-        price: Equal(price),
-      },
-    });
-  }
-  
-
-  // 리뷰의 평균 rating이 특정 값과 일치하는 상품 가져오기
-  async getProductsByRating(rating: number): Promise<Product[]> {
-    const products = await this.productRepository.find({
-      relations: ['reviews'],
-    });
-
-    // 평균 rating이 정확히 일치하는 상품만 필터링
-    return products.filter(product => {
-      const averageRating = product.reviews.length
-        ? product.reviews.reduce((sum, review) => sum + review.rating, 0) / product.reviews.length
-        : 0;
-      return averageRating === rating;
-    });
+    return { message: `${product.name} 구매 완료`};
   }
 }
