@@ -23,6 +23,16 @@ export class QuestController {
         return await this.questService.getDst(req.userId);
     }
 
+    @Get('daily')
+    async getDailyQuest(@Request() req: IncomingMessage): Promise<Quest> {
+        return await this.questService.getDailyQuest(req.userId);
+    }
+
+    @Get('generate')
+    async generateQuest(@Request() req: IncomingMessage): Promise<Quest[]> {
+        return await this.analyzerService.createQuest(req.userId);
+    }
+
     @Get("list")
     @ApiOperation({
         summary: "도전과제 목록 조회",
@@ -52,11 +62,6 @@ export class QuestController {
       @Headers('X-DUMMY-MODE') isDummyMode: boolean,
     ): Promise<Quest[]> {
         return await this.questService.getActiveQuestList(req.userId);
-    }
-
-    @Post('create')
-    async createQuest(@Request() req: IncomingMessage): Promise<Quest[]> {
-        return await this.analyzerService.createQuest(req.userId);
     }
 
 

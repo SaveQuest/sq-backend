@@ -16,6 +16,20 @@ export class QuestService {
         private readonly userRepository: Repository<User>,
 
     ) {}
+
+    async getDailyQuest(userId: number): Promise<any> {
+        const user = await this.userRepository.findOne({
+            where: { id: userId },
+            relations: {
+                quests: true,
+                generatedQuests: true,
+            }
+        });
+        if (user.generatedQuests.length == 0) {
+            return null;
+        }
+    }
+
     async getDst(userId: number): Promise<QuestDST>  {
         const quests = await this.getActiveQuestList(userId);
         const dstElement: QuestDSTElement[] = [];

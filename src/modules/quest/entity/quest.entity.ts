@@ -4,8 +4,8 @@ import { Exclude } from "class-transformer";
 @Entity()
 export class Quest {
     @Exclude()
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
 
     @Column()
     name: string;
