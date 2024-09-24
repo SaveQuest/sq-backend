@@ -25,6 +25,9 @@ export class Quest {
     @Column()
     reward: number;
 
+    @Column()
+    rewardExp: number;
+
     @Column({ type: 'timestamptz' })
     deadline: Date;
 

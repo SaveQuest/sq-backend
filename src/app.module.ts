@@ -9,7 +9,6 @@ import { SmsModule } from './modules/sms/sms.module';
 import { QuestModule } from './modules/quest/quest.module';
 import { MileageModule } from './modules/mileage/mileage.module';
 import { ShopModule } from './modules/shop/shop.module';
-import { ChallengeModule } from './modules/challenge/challenge.module';
 import { StaticFileModule } from './modules/staticfile/staticfile.module';
 import dataSource from './ormconfig';
 

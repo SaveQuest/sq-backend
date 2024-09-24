@@ -29,9 +29,10 @@ export class TransactionAnalysisService {
     const user = await this.userRepository.findOne({
       where: { id: userId }, relations: ['mileage', 'quests']
     });
-    user.quests = await this.analyzeTransactions(user.mileage);
-    await this.questRepository.save(user.quests);
-    return user.quests;
+    user.generatedQuests = await this.analyzeTransactions(user.mileage);
+    user.lastQuestGeneratedAt = new Date();
+    await this.questRepository.save(user.generatedQuests);
+    return user.generatedQuests;
   }
 
   @Category('편의점')
@@ -63,27 +64,21 @@ export class TransactionAnalysisService {
     const onlineShoppingKeywords = ['쿠팡', '11번가', 'g마켓', '옥션', '티몬', '위메프'];
     return onlineShoppingKeywords.some(keyword => merchantName.toLowerCase().includes(keyword));
   }
-
-  async analyzeTransactions(transactions: Mileage[]): Promise<Quest[]> {
+  async calculateUsage(transactions: Mileage[]): Promise<{
+    categoryStore: Record<string, number>, merchantStore: Record<string, number>
+  }> {
     const categoryStore: Record<string, number> = {};
     const merchantStore: Record<string, number> = {};
-    const challenges: Quest[] = [];
-    const now = new Date();
-    const oneMonthLater = new Date(now.setMonth(now.getMonth() + 1));
-    const createdChallenges = new Set<string>();
 
-    // 1. 카테고리별 총 사용 금액 계산
     for (const transaction of transactions) {
       const merchantName = transaction.merchantName;
       const amount = transaction.amount;
 
-      // 상점별 총 사용 금액 계산
       if (!merchantStore[merchantName]) {
         merchantStore[merchantName] = 0;
       }
       merchantStore[merchantName] += amount;
 
-      // 카테고리별 총 사용 금액 계산
       const category = await this.getCategoryForMerchant(merchantName);
       if (category && category !== merchantName) {
         if (!categoryStore[category]) {
@@ -92,6 +87,36 @@ export class TransactionAnalysisService {
         categoryStore[category] += amount;
       }
     }
+    return { categoryStore, merchantStore };
+  }
+
+  async updateQuestWithTransactionData(userId: number, transactions: Mileage[]): Promise<Quest[]> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['mileage', 'quests'],
+    });
+    const { categoryStore, merchantStore } = await this.calculateUsage(transactions);
+
+    for (const quest of user.quests) {
+      const [type, name] = quest.discriminator.split(':');
+
+      if (type === 'category' && categoryStore[name]) {
+        quest.totalUsage += categoryStore[name];
+      } else if (type === 'name' && merchantStore[name]) {
+        quest.totalUsage += merchantStore[name];
+      }
+    }
+    await this.questRepository.save(user.quests);
+    return user.quests;
+  }
+
+  async analyzeTransactions(transactions: Mileage[]): Promise<Quest[]> {
+    const challenges: Quest[] = [];
+    const now = new Date();
+    const oneMonthLater = new Date(now.setMonth(now.getMonth() + 1));
+    const createdChallenges = new Set<string>();
+
+    const { categoryStore, merchantStore } = await this.calculateUsage(transactions)
 
     for (const category in categoryStore) {
       const totalAmount = categoryStore[category];
@@ -105,6 +130,7 @@ export class TransactionAnalysisService {
             limitUsage: targetAmount,
             discriminator: `category:${category}`,
             reward: this.calculateReward(totalAmount),
+            rewardExp: this.calculateRewardExp(totalAmount),
             totalUsage: 0,
             deadline: oneMonthLater,
             createdAt: new Date(),
@@ -129,6 +155,7 @@ export class TransactionAnalysisService {
           limitUsage: targetAmount,
           discriminator: `name:${merchantName}`,
           reward: this.calculateReward(totalAmount),
+          rewardExp: this.calculateRewardExp(totalAmount),
           totalUsage: 0,
           deadline: oneMonthLater,
           createdAt: new Date(),
@@ -162,11 +189,21 @@ export class TransactionAnalysisService {
 
   private calculateReward(totalAmount: number): number {
     if (totalAmount >= 10000) {
-      return 100;
+      return 500;
     } else if (totalAmount >= 5000) {
-      return 70;
+      return 350;
     } else {
-      return 50;
+      return 200;
+    }
+  }
+
+  private calculateRewardExp(totalAmount: number): number {
+    if (totalAmount >= 10000) {
+      return 60;
+    } else if (totalAmount >= 5000) {
+      return 45;
+    } else {
+      return 30;
     }
   }
 }

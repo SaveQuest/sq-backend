@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Delete, Param, Request, Headers } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Param, Request, Headers, Body } from "@nestjs/common";
 import { QuestService } from '../service/quest.service';
 import { Quest } from '../entity/quest.entity';
 import { User } from '@/modules/user/entities/user.entity';
@@ -24,13 +24,13 @@ export class QuestController {
     }
 
     @Get('daily')
-    async getDailyQuest(@Request() req: IncomingMessage): Promise<Quest> {
+    async getDailyQuest(@Request() req: IncomingMessage): Promise<{ reward: number; name: string; id: string }[]> {
         return await this.questService.getDailyQuest(req.userId);
     }
 
-    @Get('generate')
-    async generateQuest(@Request() req: IncomingMessage): Promise<Quest[]> {
-        return await this.analyzerService.createQuest(req.userId);
+    @Post('daily/select')
+    async selectDailyQuest(@Request() req: IncomingMessage, @Body() data: {quest: string[]}): Promise<void> {
+        await this.questService.selectDailyQuest(req.userId, data.quest);
     }
 
     @Get("list")

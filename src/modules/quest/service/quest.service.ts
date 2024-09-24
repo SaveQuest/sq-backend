@@ -5,19 +5,31 @@ import { Quest } from "../entity/quest.entity";
 import { User } from "@/modules/user/entities/user.entity";
 import { QuestDST, QuestDSTElement } from "@/modules/quest/interface";
 import { ColorPrimaryLibrary } from "@/interface/frontendStyle";
+import { TransactionAnalysisService } from "@/modules/quest/service/analyzer.service";
 
 @Injectable()
 export class QuestService {
     constructor(
         @InjectRepository(Quest)
-        private readonly challengeRepository: Repository<Quest>,
+        private readonly questRepository: Repository<Quest>,
 
         @InjectRepository(User)
         private readonly userRepository: Repository<User>,
 
+        private readonly analyzerService: TransactionAnalysisService,
     ) {}
 
-    async getDailyQuest(userId: number): Promise<any> {
+    isOverOneWeekFromToday(date: Date | string): boolean {
+        const inputDate = new Date(date);
+        const today = new Date();
+
+        const timeDifference = Math.abs(today.getTime() - inputDate.getTime());
+        const oneWeekInMilliseconds = 7 * 24 * 60 * 60 * 1000;
+        return timeDifference > oneWeekInMilliseconds;
+    }
+
+
+    async getDailyQuest(userId: number): Promise<{ reward: number; name: string; id: string }[]> {
         const user = await this.userRepository.findOne({
             where: { id: userId },
             relations: {
@@ -25,9 +37,44 @@ export class QuestService {
                 generatedQuests: true,
             }
         });
-        if (user.generatedQuests.length == 0) {
-            return null;
+        if (this.isOverOneWeekFromToday(user.lastQuestGeneratedAt)) {
+            if (user.quests.length > 0) {
+                await this.rewardDailyQuest(user);
+            }
+            const newGeneratedQuest = await this.analyzerService.createQuest(userId);
+            return newGeneratedQuest.map(quest => ({id: quest.id, name: quest.name, reward: quest.reward}));
+        } else {
+            return user.generatedQuests.map(quest => ({id: quest.id, name: quest.name, reward: quest.reward}));
         }
+    }
+
+    async rewardDailyQuest(user: User): Promise<void> {
+        const userQuests = user.quests;
+        for (const quest of userQuests) {
+            if (quest.totalUsage <= quest.limitUsage) {
+                user.points += quest.reward;
+                user.exp += quest.rewardExp;
+                quest.status = 'completed';
+            }
+        }
+        await this.userRepository.save(user);
+    }
+
+    async selectDailyQuest(userId: number, questIds: string[]): Promise<void> {
+        const user = await this.userRepository.findOne({
+            where: { id: userId },
+            relations: {
+                quests: true,
+                generatedQuests: true,
+            }
+        });
+        const existingQuestIds = questIds.every(questId => user.generatedQuests.some(quest => quest.id === questId));
+        if (!existingQuestIds) {
+            throw new Error('Invalid quest id');
+        }
+        const selectedQuests = user.generatedQuests.filter(quest => questIds.includes(quest.id));
+        user.quests = user.quests.concat(selectedQuests);
+        await this.userRepository.save(user);
     }
 
     async getDst(userId: number): Promise<QuestDST>  {

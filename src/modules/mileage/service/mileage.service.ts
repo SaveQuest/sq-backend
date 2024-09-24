@@ -6,6 +6,7 @@ import { User } from "@/modules/user/entities/user.entity";
 import { Mileage } from "../entity/mileage.entity";
 import { UsedAmountDto } from "../dto/usedAmount.dto";
 import { UserNotFoundException } from "../exception/UserNotFoundException";
+import { TransactionAnalysisService } from "@/modules/quest/service/analyzer.service";
 
 @Injectable()
 export class MileageService {
@@ -14,7 +15,9 @@ export class MileageService {
         private readonly userRepository: Repository<User>,
 
         @InjectRepository(Mileage)
-        private readonly mileageRepository: Repository<Mileage>
+        private readonly mileageRepository: Repository<Mileage>,
+
+        private readonly analyzerService: TransactionAnalysisService,
     ) {}
 
     async getTotalMileageForUser(userId: number): Promise<number> {
@@ -45,6 +48,12 @@ export class MileageService {
         }
 
         const cardHistoryAppend = cardHistory.map(async (history) => {
+            const isApprovalNumberExists = targetUser.mileage.some(
+              mileage => mileage.approvalNumber === history.approvalNumber
+            );
+            if (isApprovalNumberExists) {
+                return
+            }
             const newMileage = this.mileageRepository.create(
               {
                   amount: history.amount,
@@ -60,7 +69,9 @@ export class MileageService {
             return await this.mileageRepository.save(newMileage)
         });
         const mileageEntities = await Promise.all(cardHistoryAppend);
-        targetUser.mileage = [...targetUser.mileage || [], ...mileageEntities];
+        const updateMileageEntities = mileageEntities.filter(item => item !== undefined);
+        targetUser.mileage = [...targetUser.mileage || [], ...updateMileageEntities];
+        await this.analyzerService.updateQuestWithTransactionData(userId, updateMileageEntities);
         return await this.userRepository.save(targetUser);
     }
 }
