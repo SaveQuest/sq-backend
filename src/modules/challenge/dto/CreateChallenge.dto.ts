@@ -1,4 +1,3 @@
-// dto/create-challenge.dto.ts
 import { IsString, IsNumber, IsDate, IsNotEmpty, IsBoolean } from 'class-validator';
 import { Type } from 'class-transformer';
 

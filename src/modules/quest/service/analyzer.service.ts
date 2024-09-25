@@ -141,7 +141,7 @@ export class TransactionAnalysisService {
           createdChallenges.add(`category:${category}`);
         }
       }
-    }
+    
 
     const topMerchants = Object.entries(merchantStore)
       .sort(([, amountA], [, amountB]) => amountB - amountA)
@@ -170,7 +170,8 @@ export class TransactionAnalysisService {
     }
 
     return challenges;
-  }
+  }}
+
 
   private async getCategoryForMerchant(merchantName: string): Promise<string> {
     const categoryFunctions = [
