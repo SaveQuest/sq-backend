@@ -20,7 +20,7 @@ export class UserService {
 
     generateRandomNickname(): string {
         const adjectives = [
-            "절약하는", "주식하는", "공부하는", "절약왕", "용감한", "계획적인", "성살한",
+            "절약하는", "주식하는", "공부하는", "절약왕", "용감한", "계획적인", "성실한",
         ];
 
         const animals = [
@@ -54,14 +54,16 @@ export class UserService {
     }
 
     async updateProfile(userId: number, data: UpdateProfileData) {
+        console.log(data)
         const user = await this.userRepository.findOne({ where: { id: userId } })
-        if (!!data.name) {
+        if (data.name != null) {
             user.name = data.name
         }
-        if (!!data.isProfilePublic) {
+        if (data.isProfilePublic != null) {
             user.metadata.isProfilePublic = data.isProfilePublic
         }
         await this.userRepository.save(user)
+        return user
     }
 
     async setProfileImage(userId: number, file: Express.Multer.File) {

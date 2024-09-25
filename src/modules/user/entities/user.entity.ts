@@ -34,7 +34,7 @@ export class User {
     @JoinTable()
     generatedQuests: Quest[];
 
-    @CreateDateColumn({ type: "timestamptz" , default: 0})
+    @CreateDateColumn({ type: "timestamptz" , default: new Date(0)})
     lastQuestGeneratedAt: Date;
 
     @ManyToMany(() => Mileage)
