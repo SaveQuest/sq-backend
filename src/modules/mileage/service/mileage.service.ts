@@ -42,7 +42,7 @@ export class MileageService {
 
 
     async updateCardHistory(userId: number, cardHistory: UsedAmountDto[]) {
-        const targetUser = await this.userRepository.findOne({ where: { id: userId } });
+        const targetUser = await this.userRepository.findOne({ where: { id: userId } , relations: ['mileage']});
         if (!targetUser) {
             throw new UserNotFoundException(userId);
         }
@@ -72,6 +72,7 @@ export class MileageService {
         const updateMileageEntities = mileageEntities.filter(item => item !== undefined);
         targetUser.mileage = [...targetUser.mileage || [], ...updateMileageEntities];
         await this.analyzerService.updateQuestWithTransactionData(userId, updateMileageEntities);
-        return await this.userRepository.save(targetUser);
+        await this.userRepository.save(targetUser);
+        return {"status": "success", "transaction": updateMileageEntities}
     }
 }
