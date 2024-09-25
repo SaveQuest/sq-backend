@@ -7,6 +7,7 @@ import { ProductNotFoundException } from "@/modules/shop/exception/ProductNotFou
 import { InsufficientPointsException } from "@/modules/shop/exception/InsufficientPointsException";
 import { User } from "@/modules/user/entities/user.entity";
 import { StaticFileService } from "@/modules/staticfile/service/staticfile.service";
+import { CreateProductDto } from "@/modules/shop/dto/createProduct.dto";
 
 @Injectable()
 export class ShopService {
@@ -18,9 +19,17 @@ export class ShopService {
     private readonly staticFileService: StaticFileService,
   ) {}
 
+  async createProduct(userId: number, product: CreateProductDto): Promise<Record<string, any>> {
+    const user = await this.userRepository.findOne({where: { id: userId }});
+    if (!user.metadata.isAdmin) {
+      throw new Error('관리자만 상품을 생성할 수 있습니다');
+    }
+    const productEntity = await this.productRepository.save(product);
+    return {
+      status: 'success', "product": productEntity,
+    };
+  }
 
-  // 카테고리별 조회
-  // 우선 모든 상품 가져오게 해놓음
   async getProductsByCategory(userId: number, category: ProductCategory): Promise<Record<string, any>> {
     const products = await this.productRepository.find({
       where: {
@@ -61,10 +70,14 @@ export class ShopService {
   }
   
  
-  async purchaseProduct(productId: number, userId: number): Promise<Record<string, string>> {
+  async purchaseProduct(userId: number, productId: number): Promise<{
+    success: boolean;
+    message: string;
+  }> {
     const product = await this.productRepository.findOne({
       where: { id: productId },
     });
+    console.log(product)
 
     if (!product) {
       throw new ProductNotFoundException();
@@ -81,6 +94,6 @@ export class ShopService {
 
     user.points -= product.price;
     await this.userRepository.save(user);
-    return { message: `${product.name} 구매 완료`};
+    return { success: true, message: `${product.name} 구매 완료`};
   }
 }

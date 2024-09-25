@@ -3,6 +3,7 @@ import { ShopService } from '@/modules/shop/service/shop.service';
 import { Product, ProductCategory } from "@/modules/shop/entity/product.entity";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { IncomingMessage } from "http";
+import { CreateProductDto } from "@/modules/shop/dto/createProduct.dto";
 
 @Controller('store')
 @ApiTags("상점")
@@ -12,17 +13,28 @@ export class ShopController {
     private readonly productService: ShopService,
   ) {}
 
-  @Get('product/:id')
-  async getProductsByCategory(
-    @Query('category') category: string,
+  @Post('create')
+  async createProduct(
+    @Body() product: CreateProductDto,
     @Request() req: IncomingMessage,
-    @Param('id') productId?: number,
   ): Promise<any> {
-    if (!productId) {
-      return await this.productService.getProductsByCategory(req.userId, category as ProductCategory);
-    } else {
-      return await this.productService.getProductById(req.userId, productId);
-    }
+    return await this.productService.createProduct(req.userId, product);
+  }
+
+  @Get('product')
+  async getProductsByCategory(
+    @Query('category') category: ProductCategory,
+    @Request() req: IncomingMessage,
+  ): Promise<any> {
+    return await this.productService.getProductsByCategory(req.userId, category as ProductCategory);
+  }
+
+  @Get('product/:id')
+  async getProductById(
+    @Param('id') productId: number,
+    @Request() req: IncomingMessage,
+  ): Promise<any> {
+    return await this.productService.getProductById(req.userId, productId);
   }
 
   @Post('product/:id/purchase')
