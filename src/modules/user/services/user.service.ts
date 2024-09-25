@@ -164,6 +164,7 @@ export class UserService {
         return {
             id: userId,
             name: user.name,
+            exp: user.exp,
             level: user.level,
             tag: user.titleBadge,
             profileImage: user.profileImageId ? await this.staticFileService.StaticFile(userId, user.profileImageId) : null,
