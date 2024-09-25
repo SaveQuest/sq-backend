@@ -4,6 +4,7 @@ import { UserService } from '../services/user.service';
 import { IncomingMessage } from 'http';
 import { UpdateProfileData } from "@/modules/user/dto/updateProfileData";
 import { FileInterceptor } from "@nestjs/platform-express";
+import { handleNotificationDataDto } from "@/modules/user/dto/handleNotification.dto";
 
 @Controller('user')
 @ApiTags("사용자")
@@ -155,12 +156,12 @@ export class UserController {
     }
 
     @Get('dst/notification/detail')
-    async notificationDetail(@Request() req: IncomingMessage, @Query('id') id: number) {
+    async notificationDetail(@Request() req: IncomingMessage, @Query('id') id: string) {
         return await this.userService.getNotificationDetail(req.userId, id)
     }
 
     @Get('collect')
-    async collect(@Request() req: IncomingMessage) {
-        return await this.userService.handle(req.userId)
+    async collect(@Request() req: IncomingMessage, @Body() handleNotificationData: handleNotificationDataDto) {
+        return await this.userService.handle(req.userId, handleNotificationData)
     }
 }

@@ -6,6 +6,7 @@ import { Transactional } from "typeorm-transactional";
 import { StaticFileService } from "@/modules/staticfile/service/staticfile.service";
 import { UpdateProfileData } from "@/modules/user/dto/updateProfileData";
 import { InventoryItem } from "@/modules/inventory/entities/inventory.entity";
+import { handleNotificationDataDto } from "@/modules/user/dto/handleNotification.dto";
 
 @Injectable()
 export class UserService {
@@ -93,7 +94,7 @@ export class UserService {
         }
     }
 
-    async getUserRoom(userId: number) {-
+    async getUserRoom(userId: number) {
         const user = await this.userRepository.findOne({
             where: { id: userId },
             relations: ["inventory"]
@@ -249,5 +250,20 @@ export class UserService {
         item.isEquipped = false;
         await this.userRepository.save(user);
         return {status: "success", item: item}
+    }
+
+    async handle(userId: number, data: handleNotificationDataDto) {
+        const user = await this.userRepository.findOne({where: {id: userId}});
+        if (data.uri === "/user/collect") {
+            if (data.objectId === "6fd67fa5-3020-4901-8afc-1419e045540d") {
+                user.points += 300;
+                await this.userRepository.save(user);
+                return {"success": true, "message": "Reward successfully claimed"}
+            } else {
+                throw new Error("Invalid handle object id");
+            }
+        } else {
+            throw new Error("Invalid handle uri");
+        }
     }
 }
