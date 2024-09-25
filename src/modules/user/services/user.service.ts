@@ -181,7 +181,8 @@ export class UserService {
                 totalEarned: user.totalEarned.quest,
                 totalCompleted: user.quests.filter(q => q.status === "completed").length,
                 totalFailed: user.quests.filter(q => q.status === "failed").length,
-            }
+            },
+            isProfilePublic: user.metadata.isProfilePublic
         }
     }
 
