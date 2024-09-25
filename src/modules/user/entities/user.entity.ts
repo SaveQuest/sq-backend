@@ -98,9 +98,10 @@ export class User {
     totalEarned: {quest: number, challenge: number}
 
     @Column({type: 'jsonb', default: {
-        isProfilePublic: false
+        isProfilePublic: false, isAdmin: false
     } })
     metadata: {
-        isProfilePublic: boolean
+        isProfilePublic: boolean,
+        isAdmin: boolean,
     }
 }

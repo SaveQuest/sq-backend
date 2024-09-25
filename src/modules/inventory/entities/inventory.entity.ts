@@ -3,6 +3,7 @@ import {
   Entity,
   PrimaryGeneratedColumn
 } from "typeorm";
+import { IsOptional } from "class-validator";
 
 @Entity()
 export class InventoryItem {
@@ -18,8 +19,9 @@ export class InventoryItem {
   @Column({nullable: true})
   content?: string
 
-  @Column({nullable: true})
-  imageUrl?: string
+  @Column()
+  @IsOptional()
+  imageId?: string
 
   @Column({default: false})
   isEquipped: boolean

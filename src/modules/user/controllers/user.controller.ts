@@ -1,5 +1,5 @@
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from "@nestjs/swagger";
-import { Body, Controller, Get, Post, Request, UploadedFile, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Query, Request, UploadedFile, UseInterceptors } from "@nestjs/common";
 import { UserService } from '../services/user.service';
 import { IncomingMessage } from 'http';
 import { UpdateProfileData } from "@/modules/user/dto/updateProfileData";
@@ -120,4 +120,47 @@ export class UserController {
         return await this.userService.getDSTHome(req.userId)
     }
 
+    @Get("inventory")
+    async inventory(
+      @Request() req: IncomingMessage,
+      @Query('category') category: 'character' | 'pet' | 'tag'
+    ) {
+        return await this.userService.getInventory(req.userId, category)
+    }
+
+    @Post('inventory/:itemId/equip')
+    async equipItem(
+      @Request() req: IncomingMessage,
+      @Param('itemId') itemId: string
+    ) {
+        return await this.userService.equipItem(req.userId, itemId)
+    }
+
+    @Post('inventory/:itemId/unequip')
+    async unequipItem(
+      @Request() req: IncomingMessage,
+      @Param('itemId') itemId: string
+    ) {
+        return await this.userService.unequipItem(req.userId, itemId)
+    }
+
+    @Get('room')
+    async room(@Request() req: IncomingMessage) {
+        return await this.userService.getUserRoom(req.userId)
+    }
+
+    @Get('dst/notification')
+    async notification(@Request() req: IncomingMessage) {
+        return await this.userService.getNotification(req.userId)
+    }
+
+    @Get('dst/notification/detail')
+    async notificationDetail(@Request() req: IncomingMessage, @Query('id') id: number) {
+        return await this.userService.getNotificationDetail(req.userId, id)
+    }
+
+    @Get('collect')
+    async collect(@Request() req: IncomingMessage) {
+        return await this.userService.handle(req.userId)
+    }
 }

@@ -5,6 +5,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Transactional } from "typeorm-transactional";
 import { StaticFileService } from "@/modules/staticfile/service/staticfile.service";
 import { UpdateProfileData } from "@/modules/user/dto/updateProfileData";
+import { InventoryItem } from "@/modules/inventory/entities/inventory.entity";
 
 @Injectable()
 export class UserService {
@@ -12,6 +13,8 @@ export class UserService {
         @InjectRepository(User)
         private readonly userRepository: Repository<User>,
         private readonly staticFileService: StaticFileService,
+        @InjectRepository(InventoryItem)
+        private readonly inventoryItemRepository: Repository<InventoryItem>,
     ) { }
 
     getRandomElement<T>(arr: T[]): T {
@@ -34,6 +37,89 @@ export class UserService {
 
         return `${adjective}${animal}${numbers}`;
     }
+    async getNotificationDetail(userId: number, notificationId: string) {
+        if (notificationId === "ef436f77-63b0-4a82-b45f-89c54a771ab4") {
+            return {
+                "id": userId,
+                "element": {
+                    "top": {
+                        "iconUrl": null,
+                        "rightText": "회원가입을 환영합니다!",
+                    },
+                    "content": "SaveQuest 회원가입을 환영합니다! 여기를 클릭해 코인을 받아보세요!",
+                    "bottom": {
+                        "iconUrl": null,
+                        "bottomText": "1000코인"
+                    },
+                    "handler": {
+                        "type": "REQUEST",
+                        "uri": "/user/collect",
+                        "data": {
+                            "id": "6fd67fa5-3020-4901-8afc-1419e045540d"
+                        }
+                    }
+                }
+            }
+        }
+        throw new Error("Notification not found");
+    }
+
+    async getNotification(userId: number) {
+        return {
+            id: userId, element: [
+                {
+                    "type": "NOTIFICATION_CARD",
+                    "id": "ef436f77-63b0-4a82-b45f-89c54a771ab4",
+                    "content": {
+                        "leftRowTopText": "회원가입을 환영합니다!",
+                        "leftRowBottomText": "2021-08-01T00:00:00.000Z",
+                        "descriptionText": "여기를 눌러 보상을 받으세요!"
+                    },
+                    "right": {
+                        "type": "NOTIFICATION_INTERACT_COLLECT",
+                        "content": {
+                            "rewardAmountText": "300"
+                        }
+                    },
+                    "handler": {
+                        "type": "REQUEST",
+                        "uri": "/user/collect",
+                        "data": {
+                            "id": "6fd67fa5-3020-4901-8afc-1419e045540d"
+                        }
+                    }
+                }
+            ]
+        }
+    }
+
+    async getUserRoom(userId: number) {-
+        const user = await this.userRepository.findOne({
+            where: { id: userId },
+            relations: ["inventory"]
+        });
+        const userInventory = user.inventory;
+        const equippedCharacter = userInventory.find(i => i.isEquipped && i.itemType === "character");
+        const equippedPet = userInventory.find(i => i.isEquipped && i.itemType === "pet");
+        const equippedTag = userInventory.find(i => i.isEquipped && i.itemType === "tag");
+        return {
+            character: equippedCharacter ? {
+                id: equippedCharacter.id,
+                name: equippedCharacter.name,
+                imageUrl: await this.staticFileService.StaticFile(userId, equippedCharacter.imageId)
+            } : null,
+            pet: equippedPet ? {
+                id: equippedPet.id,
+                name: equippedPet.name,
+                imageUrl: await this.staticFileService.StaticFile(userId, equippedPet.imageId)
+            } : null,
+            tag: equippedTag ? {
+                id: equippedTag.id,
+                name: equippedTag.name,
+                imageUrl: await this.staticFileService.StaticFile(userId, equippedTag.imageId)
+            } : null
+        }
+    }
 
     @Transactional()
     async getUserOrCreate(phoneNumber: string) {
@@ -45,8 +131,11 @@ export class UserService {
             user, newUser: false
         }
 
+        const newFirstTag = await this.inventoryItemRepository.save({
+            itemType: "tag", name: "절약 초보자", imageId: "", content: "절약 초보자", isEquipped: true
+        })
         const newUserEntity = await this.userRepository.save({
-            phoneNumber, name: this.generateRandomNickname()
+            phoneNumber, name: this.generateRandomNickname(), inventory: [newFirstTag]
         })
         return {
             user: newUserEntity, newUser: true
@@ -54,7 +143,6 @@ export class UserService {
     }
 
     async updateProfile(userId: number, data: UpdateProfileData) {
-        console.log(data)
         const user = await this.userRepository.findOne({ where: { id: userId } })
         if (data.name != null) {
             user.name = data.name
@@ -124,11 +212,42 @@ export class UserService {
         }
     }
 
-    findUserById(userId: number) {
-        return this.userRepository.findOne({ where: { id: userId } })
+    async getInventory(
+      userId: number,
+      category: "character" | "pet" | "tag"
+    ) {
+        const user = await this.userRepository.findOne({where: {id: userId}, relations: ["inventory"]});
+        const inventoryItems = user.inventory.filter(i => i.itemType === category);
+        return inventoryItems.map(async item => ({
+            id: item.id, name: item.name, isEquipped: item.isEquipped,
+            imageUrl: await this.staticFileService.StaticFile(userId, item.imageId),
+        }));
     }
 
-    insertUser(){
-        //return this.
+    async equipItem(userId: number, itemId: string) {
+        const user = await this.userRepository.findOne({where: {id: userId}, relations: ["inventory"]});
+        const item = user.inventory.find(i => i.id === itemId);
+        if (item == null) {
+            throw new Error("Item not found");
+        }
+        const equippedCharacter = user.inventory.find(i => i.itemType === "character" && i.isEquipped);
+        if (equippedCharacter != null) {
+            equippedCharacter.isEquipped = false;
+            await this.inventoryItemRepository.save(equippedCharacter);
+        }
+        item.isEquipped = true;
+        await this.userRepository.save(user);
+        return {status: "success", item: item}
+    }
+
+    async unequipItem(userId: number, itemId: string) {
+        const user = await this.userRepository.findOne({where: {id: userId}, relations: ["inventory"]});
+        const item = user.inventory.find(i => i.id === itemId);
+        if (item == null) {
+            throw new Error("Item not found");
+        }
+        item.isEquipped = false;
+        await this.userRepository.save(user);
+        return {status: "success", item: item}
     }
 }
