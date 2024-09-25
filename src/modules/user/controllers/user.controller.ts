@@ -21,8 +21,9 @@ export class UserController {
     }
 
     @Post("profile")
-    async updateProfile(@Request() req: IncomingMessage, @Body() data: UpdateProfileData) {
-        return await this.userService.updateProfile(req.userId, data)
+    async updateProfile(@Body() updateProfileData: UpdateProfileData, @Request() req: IncomingMessage) {
+        console.log(updateProfileData)
+        return await this.userService.updateProfile(req.userId, updateProfileData)
     }
 
     @Post("profile/image")
