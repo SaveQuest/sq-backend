@@ -31,7 +31,7 @@ export class TransactionAnalysisService {
     });
     user.generatedQuests = await this.analyzeTransactions(user.mileage);
     user.lastQuestGeneratedAt = new Date();
-    await this.questRepository.save(user.generatedQuests);
+    await this.userRepository.save(user);
     return user.generatedQuests;
   }
 
@@ -123,7 +123,7 @@ export class TransactionAnalysisService {
       if (totalAmount >= 3000) {
         const targetAmount = Math.floor(totalAmount * 0.7 / 10) * 10;
         if (!createdChallenges.has(`category:${category}`)) {
-          challenges.push({
+          const newQuestEntityData = this.questRepository.create({
             id: uuidv4(),
             name: `${category}에서 ${targetAmount.toLocaleString()}원 이하로 쓰기`,
             description: `${category}에서 ${targetAmount.toLocaleString()}원 이하로 사용하세요.`,
@@ -135,7 +135,9 @@ export class TransactionAnalysisService {
             deadline: oneMonthLater,
             createdAt: new Date(),
             status: 'inProgress'
-          });
+          })
+          const newQuestEntity = await this.questRepository.save(newQuestEntityData)
+          challenges.push(newQuestEntity);
           createdChallenges.add(`category:${category}`);
         }
       }
@@ -148,7 +150,7 @@ export class TransactionAnalysisService {
     for (const [merchantName, totalAmount] of topMerchants) {
       const targetAmount = Math.floor(totalAmount * 0.7 / 10) * 10;
       if (!createdChallenges.has(`name:${merchantName}`)) {
-        challenges.push({
+        const newQuestEntityData = this.questRepository.create({
           id: uuidv4(),
           name: `${merchantName}에서 ${targetAmount.toLocaleString()}원 이하로 쓰기`,
           description: `${merchantName}에서 ${targetAmount.toLocaleString()}원 이하로 사용하세요.`,
@@ -160,7 +162,9 @@ export class TransactionAnalysisService {
           deadline: oneMonthLater,
           createdAt: new Date(),
           status: 'inProgress'
-        });
+        })
+        const newQuestEntity = await this.questRepository.save(newQuestEntityData)
+        challenges.push(newQuestEntity);
         createdChallenges.add(`name:${merchantName}`);
       }
     }

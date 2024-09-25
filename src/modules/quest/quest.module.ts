@@ -11,5 +11,6 @@ import { Mileage } from "@/modules/mileage/entity/mileage.entity";
     imports: [TypeOrmModule.forFeature([Quest, User, Mileage])],
     providers: [QuestService, TransactionAnalysisService],
     controllers: [QuestController],
+    exports: [TransactionAnalysisService]
 })
 export class QuestModule {}

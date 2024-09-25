@@ -60,7 +60,7 @@ export class QuestService {
         await this.userRepository.save(user);
     }
 
-    async selectDailyQuest(userId: number, questIds: string[]): Promise<void> {
+    async selectDailyQuest(userId: number, questIds: string[]): Promise<Record<string, string | Quest[]>> {
         const user = await this.userRepository.findOne({
             where: { id: userId },
             relations: {
@@ -68,13 +68,16 @@ export class QuestService {
                 generatedQuests: true,
             }
         });
+        console.log(user.generatedQuests)
         const existingQuestIds = questIds.every(questId => user.generatedQuests.some(quest => quest.id === questId));
         if (!existingQuestIds) {
             throw new Error('Invalid quest id');
         }
         const selectedQuests = user.generatedQuests.filter(quest => questIds.includes(quest.id));
         user.quests = user.quests.concat(selectedQuests);
+        user.generatedQuests = []
         await this.userRepository.save(user);
+        return {status: "success", selectedQuests: selectedQuests}
     }
 
     async getDst(userId: number): Promise<QuestDST>  {

@@ -29,8 +29,8 @@ export class QuestController {
     }
 
     @Post('daily/select')
-    async selectDailyQuest(@Request() req: IncomingMessage, @Body() data: {quest: string[]}): Promise<void> {
-        await this.questService.selectDailyQuest(req.userId, data.quest);
+    async selectDailyQuest(@Request() req: IncomingMessage, @Body('quest') quest: string[]): Promise<void> {
+        await this.questService.selectDailyQuest(req.userId, quest);
     }
 
     @Get("list")
