@@ -5,7 +5,6 @@ export type ProductCategory = 'character' | 'pet' | 'background' | 'randomBox'
 
 @Entity()
 export class Product {
-  @Exclude()
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -29,7 +28,8 @@ export class Product {
 
   @Column({
     type: 'jsonb',
-    nullable: true
+    nullable: true,
+    default: {},
   })
   metadata?: Record<string, any>;
 

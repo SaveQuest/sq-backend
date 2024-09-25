@@ -39,7 +39,7 @@ export class QuestService {
         });
         if (this.isOverOneWeekFromToday(user.lastQuestGeneratedAt)) {
             if (user.quests.length > 0) {
-                await this.rewardDailyQuest(user);
+                    await this.rewardDailyQuest(user);
             }
             const newGeneratedQuest = await this.analyzerService.createQuest(userId);
             return newGeneratedQuest.map(quest => ({id: quest.id, name: quest.name, reward: quest.reward}));
@@ -54,6 +54,7 @@ export class QuestService {
             if (quest.totalUsage <= quest.limitUsage) {
                 user.points += quest.reward;
                 user.exp += quest.rewardExp;
+                user.totalSavedUsage += Number(quest.totalUsage - quest.limitUsage);
                 quest.status = 'completed';
             }
         }
