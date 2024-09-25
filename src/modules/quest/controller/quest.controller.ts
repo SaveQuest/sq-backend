@@ -1,42 +1,69 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, Request } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Param, Request, Headers, Body } from "@nestjs/common";
 import { QuestService } from '../service/quest.service';
 import { Quest } from '../entity/quest.entity';
+import { User } from '@/modules/user/entities/user.entity';
 import { IncomingMessage } from "http";
-import { AlgorithmService } from "@/modules/quest/service/algorithm.service";
+import { TransactionAnalysisService } from "@/modules/quest/service/analyzer.service";
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { QuestDST } from "@/modules/quest/interface";
 
 @Controller('quest')
+@ApiTags("도전과제")
+@ApiBearerAuth(
+  "accessToken"
+)
 export class QuestController {
     constructor(
       private readonly questService: QuestService,
-      private readonly algorithmService: AlgorithmService,
+      private readonly analyzerService: TransactionAnalysisService,
     ) {}
 
-    // // 도전과제 조회
+    @Get('dst')
+    async getDst(@Request() req: IncomingMessage): Promise<QuestDST> {
+        return await this.questService.getDst(req.userId);
+    }
+
     @Get('daily')
-    async getTopFiveChallenge(): Promise<Quest[]> {
-        return this.questService.getTopFiveChallenges();
+    async getDailyQuest(@Request() req: IncomingMessage): Promise<{ reward: number; name: string; id: string }[]> {
+        return await this.questService.getDailyQuest(req.userId);
     }
 
-    // 특정 카테고리별
-    @Get(':category')
-    async getChallengeByCategory(@Param('category') category: string): Promise<Quest> {
-        return this.questService.getChallengeByCategory(category);
+    @Post('daily/select')
+    async selectDailyQuest(@Request() req: IncomingMessage, @Body('quest') quest: string[]): Promise<void> {
+        await this.questService.selectDailyQuest(req.userId, quest);
     }
 
-    // 도전과제 생성
-    @Post()
-    async createChallenge(@Request() req: IncomingMessage): Promise<Quest[]> {
-        return this.algorithmService.generateDailyQuests(req.userId);
+    @Get("list")
+    @ApiOperation({
+        summary: "도전과제 목록 조회",
+        description: "사용자의 도전과제 목록을 조회합니다. (로그인 필요)"
+    })
+    @ApiResponse({
+        status: 200,
+        description: "도전과제 목록 조회 성공",
+        content: {
+            "application/json": {
+                example: [{
+                    "reward": 500,
+                    "name": "편의점 3500원 이하로 쓰기",
+                    "dailyUsage": 0,
+                    "limitUsage": 3500,
+                }, {
+                    "reward": 500,
+                    "name": "편의점 3500원 이하로 쓰기",
+                    "dailyUsage": 0,
+                    "limitUsage": 3500,
+                }]
+            }
+        }
+    })
+    async getQuestList(
+      @Request() req: IncomingMessage,
+      @Headers('X-DUMMY-MODE') isDummyMode: boolean,
+    ): Promise<Quest[]> {
+        return await this.questService.getActiveQuestList(req.userId);
     }
 
-    @Post("checkStatus")
-    async checkQuestCompletion(@Request() req: IncomingMessage): Promise<void> {
-        await this.algorithmService.checkQuestCompletion(req.userId);
-    }
 
-    // 도전과제 삭제
-    @Delete(':id')
-    async deleteChallenge(@Param('id') id: number): Promise<void> {
-        return this.questService.deleteChallenge(id);
-    }
+
 }

@@ -50,7 +50,7 @@ export class AuthController {
         content: {
             "application/json": {
                 example: {
-                    "accessToken": "eyJhbGci...."
+                    "accessToken": "eyJhbGci....", "newUser": true,
                 }
             }
         }

@@ -37,14 +37,14 @@ export class AuthService {
         const verificationCode = await this.verifyCode(uuid, code);
         await this.verificationCodeRepository.remove(verificationCode)
 
-        const user = await this.userService.getUserOrCreate(verificationCode.phoneNumber)
+        const { user, newUser } = await this.userService.getUserOrCreate(verificationCode.phoneNumber)
         const accessToken = this.generateToken(user.id)
 
-        return { accessToken }
+        return { accessToken, newUser }
     }
 
     private async sendVerificationCode(phoneNumber: string, code: string) {
-        const message = `SaveQuest 인증번호입니다.\n${code}`
+        const message = `${code} is your SaveQuest verification code.`
         await this.smsService.sendSMS(phoneNumber, message)
     }
 

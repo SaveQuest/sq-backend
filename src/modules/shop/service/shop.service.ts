@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In } from 'typeorm';
-import { Product } from '@/modules/shop/entity/product.entity';
-import { Review } from '@/modules/shop/entity/review.entity';
+import { Repository, In, MoreThan, Like, Equal } from 'typeorm';
+import { Product, ProductCategory } from "@/modules/shop/entity/product.entity";
 
 import { ProductNotFoundException } from "@/modules/shop/exception/ProductNotFoundException";
 import { InsufficientPointsException } from "@/modules/shop/exception/InsufficientPointsException";
 import { User } from "@/modules/user/entities/user.entity";
+import { StaticFileService } from "@/modules/staticfile/service/staticfile.service";
+import { CreateProductDto } from "@/modules/shop/dto/createProduct.dto";
 
 @Injectable()
 export class ShopService {
@@ -15,49 +16,70 @@ export class ShopService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Product)
     private productRepository: Repository<Product>,
-    @InjectRepository(Review)
-    private reviewRepository: Repository<Review>,
+    private readonly staticFileService: StaticFileService,
   ) {}
 
-  // async createProduct(name: string, price: number, description: string): Promise<Product> {
-  //   const product = this.productRepository.create({ name, price, description });
-  //   return this.productRepository.save(product);
-  // }
+  async createProduct(userId: number, product: CreateProductDto): Promise<Record<string, any>> {
+    const user = await this.userRepository.findOne({where: { id: userId }});
+    if (!user.metadata.isAdmin) {
+      throw new Error('관리자만 상품을 생성할 수 있습니다');
+    }
+    const productEntity = await this.productRepository.save(product);
+    return {
+      status: 'success', "product": productEntity,
+    };
+  }
 
-  async addReview(productId: number, content: string, rating: number): Promise<Review> {
+  async getProductsByCategory(userId: number, category: ProductCategory): Promise<Record<string, any>> {
+    const products = await this.productRepository.find({
+      where: {
+        category,
+      },
+    });
+    const result = products.map(async (product) => {
+      return {
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: await this.staticFileService.StaticFile(userId, `storeProduct/${product.imageId}.png`),
+      };
+    });
+
+    return {
+      products: await Promise.all(result),
+    }
+  }
+
+  async getProductById(userId: number, productId: number): Promise<Record<string, any>> {
     const product = await this.productRepository.findOne({
       where: { id: productId },
-      relations: ['reviews'],
     });
 
     if (!product) {
       throw new ProductNotFoundException();
     }
 
-    const review = this.reviewRepository.create({ content, rating, product });
-    return this.reviewRepository.save(review);
+    return {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: await this.staticFileService.StaticFile(userId, `storeProduct/${product.imageId}.png`),
+      description: product.description,
+      isPurchasable: product.isAvailable,
+    };
   }
-
-  // 상품과 리뷰 목록 가져오기
-  async getProductWithReviews(productId: number): Promise<Product> {
-    return this.productRepository.findOne({
+  
+ 
+  async purchaseProduct(userId: number, productId: number): Promise<{
+    success: boolean;
+    message: string;
+  }> {
+    const product = await this.productRepository.findOne({
       where: { id: productId },
-      relations: ['reviews'],
     });
-  }
+    console.log(product)
 
-  async getProductsByIds(ids: number[]): Promise<Product[]> {
-    return this.productRepository.find({
-      where: { id: In(ids) }, // In()을 사용하여 여러 ID 조건 전달
-    });
-  }
-
-  async purchaseProducts(productIds: number[], userId: number): Promise<Product[]> {
-    const products = await this.productRepository.find({
-      where: { id: In(productIds) },
-    });
-
-    if (!products.length) {
+    if (!product) {
       throw new ProductNotFoundException();
     }
 
@@ -65,14 +87,13 @@ export class ShopService {
       where: { id: userId },
     });
 
-    const totalPrice = products.reduce((sum, product) => sum + product.price, 0);
 
-    if (user.points < totalPrice) {
+    if (user.points < product.price) {
       throw new InsufficientPointsException();
     }
 
-    user.points -= totalPrice;
+    user.points -= product.price;
     await this.userRepository.save(user);
-    return products;
+    return { success: true, message: `${product.name} 구매 완료`};
   }
 }

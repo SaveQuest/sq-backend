@@ -4,8 +4,8 @@ import { Exclude } from "class-transformer";
 @Entity()
 export class Quest {
     @Exclude()
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
 
     @Column()
     name: string;
@@ -14,13 +14,19 @@ export class Quest {
     description: string;
 
     @Column('int')
+    totalUsage: number;
+
+    @Column('int')
     limitUsage: number;
 
     @Column()
-    category: string;
+    discriminator: string;
 
     @Column()
     reward: number;
+
+    @Column()
+    rewardExp: number;
 
     @Column({ type: 'timestamptz' })
     deadline: Date;

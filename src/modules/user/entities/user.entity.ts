@@ -1,28 +1,48 @@
 import { Challenge } from "@/modules/challenge/entity/challenge.entity";
 import { Quest } from "@/modules/quest/entity/quest.entity";
 import { Mileage } from "@/modules/mileage/entity/mileage.entity";
+import { Notification } from "@/modules/notification/entities/notification.entity";
+import { InventoryItem } from "@/modules/inventory/entities/inventory.entity";
 import { Exclude } from "class-transformer";
-import { Column, ManyToMany, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-
-export enum UserTag {
-    WELCOME = 1 << 0,
-    ADMIN = 1 << 1,
-    TEST_TAG = 1 << 2,
-}
+import {
+    Column,
+    ManyToMany,
+    ManyToOne,
+    CreateDateColumn,
+    Entity,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn,
+    JoinTable
+} from "typeorm";
 
 @Entity()
 export class User {
     @PrimaryGeneratedColumn()
     id: number
 
-    @ManyToMany(() => Challenge, challenge => challenge.participants)
-    challenges: Challenge[];
+    @Column({default: "홍길동"})
+    name: string
+
+    @ManyToOne(() => Challenge, challenge => challenge.participants)
+    challenge: Challenge;
 
     @ManyToMany(() => Quest)
+    @JoinTable()
     quests: Quest[];
 
     @ManyToMany(() => Quest)
+    @JoinTable()
+    generatedQuests: Quest[];
+
+    @CreateDateColumn({ type: "timestamptz" , default: new Date(0)})
+    lastQuestGeneratedAt: Date;
+
+    @ManyToMany(() => Mileage)
+    @JoinTable()
     mileage: Mileage[];
+
+    @ManyToMany(() => Notification)
+    notifications: Notification[];
 
     @Column({ default: 0 })
     dailyUsage: number
@@ -33,34 +53,27 @@ export class User {
     @Column({ default: 0 })
     exp: number
 
+    @Column({ default: 1 })
+    level: number
+
     @Column({ type:"int", default: 4000 })
     points: number
 
     @Column({ type: "int", default: 0 })
     tags: number
 
-    getTags(): UserTag[] {
-        const activeTags: UserTag[] = [];
-        for (const tag in UserTag) {
-            const tagValue = parseInt(tag, 10);
-            if (!isNaN(tagValue) && (this.tags & tagValue) === tagValue) {
-                activeTags.push(tagValue);
-            }
-        }
-        return activeTags;
-    }
-    
-    hasTag(tag: UserTag): boolean {
-        return (this.tags & tag) === tag;
-    }
-  
-    addTag(tag: UserTag) {
-        this.tags |= tag;
-    }
+    @Column({ nullable: true })
+    titleBadge: string
 
-    removeTag(tag: UserTag) {
-        this.tags &= ~tag;
-    }
+    @Column({ nullable: true })
+    profileImageId: string
+
+    @Column({ nullable: true})
+    staticFileRequestKey: string
+
+    @ManyToMany(() => InventoryItem)
+    @JoinTable()
+    inventory: InventoryItem[]
 
     @Column({ unique: true })
     phoneNumber: string
@@ -72,4 +85,23 @@ export class User {
     @Exclude()
     @UpdateDateColumn({ type: "timestamptz" })
     updated_at: Date;
+
+    @Column({ default: 0 })
+    totalSavedUsage: number
+
+    @Column(
+      {
+          type: 'jsonb',
+          default: {quest: 0, challenge: 0}
+      }
+    )
+    totalEarned: {quest: number, challenge: number}
+
+    @Column({type: 'jsonb', default: {
+        isProfilePublic: false, isAdmin: false
+    } })
+    metadata: {
+        isProfilePublic: boolean,
+        isAdmin: boolean,
+    }
 }

@@ -1,37 +1,47 @@
-import { Controller, Post, Get, Param, Body, Query } from '@nestjs/common';
+import { Controller, Post, Get, Param, Body, Query, Request } from "@nestjs/common";
 import { ShopService } from '@/modules/shop/service/shop.service';
-import { Product } from '@/modules/shop/entity/product.entity';
-import { Review } from '@/modules/shop/entity/review.entity';
+import { Product, ProductCategory } from "@/modules/shop/entity/product.entity";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import { IncomingMessage } from "http";
+import { CreateProductDto } from "@/modules/shop/dto/createProduct.dto";
 
-@Controller('shop')
+@Controller('store')
+@ApiTags("상점")
+@ApiBearerAuth("accessToken")
 export class ShopController {
-  constructor(private readonly productService: ShopService) {}
+  constructor(
+    private readonly productService: ShopService,
+  ) {}
 
-  @Post(':id/reviews')
-  async addReview(
+  @Post('create')
+  async createProduct(
+    @Body() product: CreateProductDto,
+    @Request() req: IncomingMessage,
+  ): Promise<any> {
+    return await this.productService.createProduct(req.userId, product);
+  }
+
+  @Get('product')
+  async getProductsByCategory(
+    @Query('category') category: ProductCategory,
+    @Request() req: IncomingMessage,
+  ): Promise<any> {
+    return await this.productService.getProductsByCategory(req.userId, category as ProductCategory);
+  }
+
+  @Get('product/:id')
+  async getProductById(
     @Param('id') productId: number,
-    @Body('content') content: string,
-    @Body('rating') rating: number,
-  ): Promise<Review> {
-    return this.productService.addReview(productId, content, rating);
+    @Request() req: IncomingMessage,
+  ): Promise<any> {
+    return await this.productService.getProductById(req.userId, productId);
   }
 
-  @Get(':id/reviews')
-  async getProductWithReviews(@Param('id') productId: number): Promise<Product> {
-    return this.productService.getProductWithReviews(productId);
-  }
-
-  @Get('/products')
-  async getProductsByIds(@Query('ids') ids: string): Promise<Product[]> {
-    const idArray = ids.split(',').map(Number);
-    return this.productService.getProductsByIds(idArray);
-  }
-
-  @Post('purchase')
-  async purchaseProducts(
-    @Body('productIds') productIds: number[],
-    @Body('userId') userId: number,
-  ): Promise<Product[]> {
-    return this.productService.purchaseProducts(productIds, userId);
+  @Post('product/:id/purchase')
+  async purchaseProduct(
+    @Request() req: IncomingMessage,
+    @Param('id') productId: number,
+  ): Promise<any> {
+    return await this.productService.purchaseProduct(req.userId, productId);
   }
 }

@@ -1,12 +1,19 @@
 import { z } from "zod"
 
 export const envSchema = z.object({
-    NODE_ENV: z.union([z.literal("development"), z.literal("production")]),
+    NODE_ENV: z.union([
+      z.literal("development"),
+      z.literal("production"),
+      z.literal("development:no-drop-tables")
+    ]),
     DATABASE_HOST: z.string(),
     DATABASE_PORT: z.coerce.number(),
     DATABASE_USERNAME: z.string(),
     DATABASE_PASSWORD: z.string(),
     DATABASE_NAME: z.string(),
+    SMS_API_KEY: z.string(),
+    SMS_API_SECRET: z.string(),
+    STATIC_FILE_ADMIN_KEY: z.string(),
 })
 
 export const envValidator = {
