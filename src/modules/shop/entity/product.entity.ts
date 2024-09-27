@@ -17,7 +17,10 @@ export class Product {
   price: number;
 
   @Column()
-  imageId: string;
+  previewImageId: string;
+
+  @Column()
+  sourceImageId: string;
 
   @Column()
   category: ProductCategory;
