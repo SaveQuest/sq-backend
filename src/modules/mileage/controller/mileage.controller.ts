@@ -19,6 +19,7 @@ export class MileageController {
       @Request() req: IncomingMessage,
       @Body() usedAmountDto: UsedAmountDto[]
     ) {
+        console.log(usedAmountDto)
         return await this.mileageService.updateCardHistory(req.userId, usedAmountDto.reverse());
     }
 
