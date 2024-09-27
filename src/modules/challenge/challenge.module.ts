@@ -4,11 +4,15 @@ import { Challenge } from './entity/challenge.entity';
 import { ChallengeService } from './service/challenge.service';
 import { ChallengeController } from './controller/challenge.controller';
 import { User } from '@/modules/user/entities/user.entity';
-import { MileageModule } from '../mileage/mileage.module';
+import { ScheduleModule } from "@nestjs/schedule";
+import { ScheduledTask } from "@/modules/challenge/entity/task.entity";
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Challenge, User]),   MileageModule,],
-    providers: [ChallengeService],
+    imports: [
+      ScheduleModule.forRoot(),
+      TypeOrmModule.forFeature([Challenge, User, ScheduledTask])
+    ],
+    providers: [ChallengeService, ScheduleModule],
     controllers: [ChallengeController],
 })
 export class ChallengeModule {}

@@ -1,10 +1,10 @@
-import { IsString, IsNumber, IsDate, IsNotEmpty, IsBoolean } from 'class-validator';
+import { IsString, IsNumber, IsDate, IsNotEmpty, IsBoolean } from "class-validator";
 import { Type } from 'class-transformer';
 
 export class CreateChallengeDto {
   @IsString()
   @IsNotEmpty()
-  title: string;
+  name: string;
 
   @IsNumber()
   @IsNotEmpty()
@@ -19,7 +19,10 @@ export class CreateChallengeDto {
   @Type(() => Date)
   endDate: Date;
 
+  @IsString()
   @IsNotEmpty()
+  topic: string;
+
   @IsBoolean()
-  isFinished: boolean;
+  isPublic: boolean;
 }

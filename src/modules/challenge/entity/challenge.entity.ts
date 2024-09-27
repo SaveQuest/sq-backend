@@ -3,8 +3,11 @@ import { Column, CreateDateColumn, Entity, ManyToMany, PrimaryGeneratedColumn, J
 
 @Entity()
 export class Challenge {
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
+
+    @Column()
+    joinCode: string;
 
     // 챌린지 제목
     @Column()
@@ -25,11 +28,15 @@ export class Challenge {
     @Column({ type: "timestamptz" })
     endDate: Date;
 
-    // 챌린지 참가자들 (ManyToMany 관계)
-    @ManyToMany(() => User, user => user.id)
-    @JoinTable()
-    participants: User[];
-
     @CreateDateColumn({ type: "timestamptz" })
     createdAt: Date;
+
+    @Column({type: "jsonb", default: {}})
+    usage: Record<number, number>
+
+    @Column()
+    topic: string // category:게임
+
+    @Column()
+    isPublic: boolean;
 }
