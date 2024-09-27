@@ -38,6 +38,19 @@ export class UserService {
 
         return `${adjective}${animal}${numbers}`;
     }
+
+    formatNumber(num: number): string {
+        if (num >= 10000) {
+            const firstDigit = Math.floor(num / 10000);
+            return `${firstDigit}만원`;
+        } else if (num >= 1000) {
+            const firstDigit = Math.floor(num / 1000);
+            return `${firstDigit}천원`;
+        } else {
+            return `${num}원`;
+        }
+    }
+
     async getNotificationDetail(userId: number, notificationId: string) {
         if (notificationId === "ef436f77-63b0-4a82-b45f-89c54a771ab4") {
             return {
@@ -194,23 +207,47 @@ export class UserService {
     }
 
     async getDSTHome(userId: number) {
+        const user = await this.userRepository.findOne({where: {id: userId}});
+        const totalSavedUsageData = {
+            type: "CAROUSEL_PERCENT_CARD",
+            content: {
+                topRowText: "이번달 SaveQuest로",
+                bottomRowColorText: this.formatNumber(user.totalSavedUsage),
+                bottomRowText: "아꼈어요"
+            },
+            right: {
+                text: `Lv.${user.level}`,
+            },
+            style: {
+                bottomRowColorText: {
+                    color: "Primary/300"
+                },
+                rightText: {
+                    color: "Primary/400",
+                    backgroundColor: "Primary/100"
+                }
+            },
+            handler: null,
+        }
+        const staticNoticeData = {
+            type: "CAROUSEL_BASIC_CARD",
+            content: {
+                topRowText: "SaveQuest 정식 출시",
+                bottomRowText: "Play Store에서 SaveQuest 리뷰 남기기"
+            },
+            right: {
+                imageUri: await this.staticFileService.StaticFile(userId, "/dstCarouselImage/70a3ceae-d5dc-463e-a98b-48d6243a6a80.png")
+            },
+            handler: {
+                type: "WEBLINK",
+                url: "https://play.google.com/store/apps/details?id=me.ychan.savequest"
+            }
+        }
         return {
             id: userId,
             elements: [
-                {
-                    type: "CAROUSEL_BASIC_CARD",
-                    content: {
-                        topRowText: "SaveQuest 정식 출시",
-                        bottomRowText: "Play Store에서 SaveQuest 리뷰 남기기"
-                    },
-                    right: {
-                        imageUri: await this.staticFileService.StaticFile(userId, "/dstCarouselImage/70a3ceae-d5dc-463e-a98b-48d6243a6a80.png")
-                    },
-                    handler: {
-                        type: "WEBLINK",
-                        url: "https://play.google.com/store/apps/details?id=me.ychan.savequest"
-                    }
-                }
+                totalSavedUsageData,
+                staticNoticeData
             ]
         }
     }

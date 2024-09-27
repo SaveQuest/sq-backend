@@ -15,7 +15,6 @@ import { QuestDST } from "@/modules/quest/interface";
 export class QuestController {
     constructor(
       private readonly questService: QuestService,
-      private readonly analyzerService: TransactionAnalysisService,
     ) {}
 
     @Get('dst')
@@ -24,8 +23,9 @@ export class QuestController {
     }
 
     @Get('daily')
-    async getDailyQuest(@Request() req: IncomingMessage): Promise<{ reward: number; name: string; id: string }[]> {
-        return await this.questService.getDailyQuest(req.userId);
+    async getDailyQuest(@Request() req: IncomingMessage): Promise<any> {
+        const quest = await this.questService.getDailyQuest(req.userId);
+        return {quest};
     }
 
     @Post('daily/select')
@@ -63,7 +63,4 @@ export class QuestController {
     ): Promise<Quest[]> {
         return await this.questService.getActiveQuestList(req.userId);
     }
-
-
-
 }

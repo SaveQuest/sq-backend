@@ -37,14 +37,21 @@ export class QuestService {
                 generatedQuests: true,
             }
         });
+        if (user.generatedQuests.length === 0) {
+            return []
+        }
         if (this.isOverOneWeekFromToday(user.lastQuestGeneratedAt)) {
             if (user.quests.length > 0) {
                     await this.rewardDailyQuest(user);
             }
             const newGeneratedQuest = await this.analyzerService.createQuest(userId);
-            return newGeneratedQuest.map(quest => ({id: quest.id, name: quest.name, reward: quest.reward}));
+            return newGeneratedQuest.map(quest => ({
+                id: quest.id, name: quest.name, reward: quest.reward, percent: quest.totalUsage / quest.limitUsage * 100
+            }));
         } else {
-            return user.generatedQuests.map(quest => ({id: quest.id, name: quest.name, reward: quest.reward}));
+            return user.generatedQuests.map(quest => ({
+                id: quest.id, name: quest.name, reward: quest.reward, percent: quest.totalUsage / quest.limitUsage * 100
+            }));
         }
     }
 

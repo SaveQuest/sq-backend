@@ -23,9 +23,6 @@ export class User {
     @Column({default: "홍길동"})
     name: string
 
-    @ManyToOne(() => Challenge, challenge => challenge.participants)
-    challenge: Challenge;
-
     @ManyToMany(() => Quest)
     @JoinTable()
     quests: Quest[];

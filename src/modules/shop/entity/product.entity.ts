@@ -1,5 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToMany } from 'typeorm';
-import { Exclude } from "class-transformer";
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 export type ProductCategory = 'character' | 'pet' | 'background' | 'randomBox'
 
@@ -26,11 +25,13 @@ export class Product {
   @Column()
   isAvailable: boolean;
 
+  @Column({type: 'json', nullable: true})
+  randomBoxProbability?: Record<string, number>[]
+
   @Column({
     type: 'jsonb',
     nullable: true,
     default: {},
   })
   metadata?: Record<string, any>;
-
 }
