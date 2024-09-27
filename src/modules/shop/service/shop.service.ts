@@ -44,7 +44,7 @@ export class ShopService {
         id: product.id,
         name: product.name,
         price: product.price,
-        image: await this.staticFileService.StaticFile(userId, `storeProduct/${product.imageId}.png`),
+        image: await this.staticFileService.StaticFile(userId, `storeProduct/${product.previewImageId}.png`),
       };
     });
 
@@ -66,10 +66,29 @@ export class ShopService {
       id: product.id,
       name: product.name,
       price: product.price,
-      image: await this.staticFileService.StaticFile(userId, `storeProduct/${product.imageId}.png`),
+      image: await this.staticFileService.StaticFile(userId, `storeProduct/${product.sourceImageId}.png`),
       description: product.description,
       isPurchasable: product.isAvailable,
     };
+  }
+
+  async addInventoryItem(userId: number, productId: number): Promise<void> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    const product = await this.productRepository.findOne({ where: { id: productId } });
+    if (!product) {
+      throw new ProductNotFoundException();
+    }
+    if (product.category !== 'randomBox') {
+      const inventoryItem = this.inventoryItemRepository.create({
+        name: product.name,
+        imageId: product.sourceImageId,
+        itemType: product.category,
+        content: product.name,
+        isEquipped: false,
+      });
+      user.inventory.push(inventoryItem);
+      await this.userRepository.save(user);
+    }
   }
   
  
@@ -97,6 +116,8 @@ export class ShopService {
 
     if (product.category === 'randomBox') {
       return await this.openRandomBox(userId, product);
+    } else {
+      await this.addInventoryItem(userId, productId);
     }
     return { success: true, message: `${product.name} 구매 완료`};
   }

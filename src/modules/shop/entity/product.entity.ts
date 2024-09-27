@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
-export type ProductCategory = 'character' | 'pet' | 'background' | 'randomBox'
+export type ProductCategory = 'character' | 'pet' | 'randomBox'
 
 @Entity()
 export class Product {
