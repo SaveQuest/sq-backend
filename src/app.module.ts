@@ -15,6 +15,8 @@ import dataSource from './ormconfig';
 import { DataSource } from 'typeorm';
 import { addTransactionalDataSource } from 'typeorm-transactional';
 import { SeedingModule } from './modules/seeding/seeding.module';
+import { Challenge } from "@/modules/challenge/entity/challenge.entity";
+import { ChallengeModule } from "@/modules/challenge/challenge.module";
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -34,6 +36,7 @@ import { SeedingModule } from './modules/seeding/seeding.module';
     AuthModule,
     SmsModule,
     SeedingModule,
+    ChallengeModule,
     ShopModule,
     MileageModule,
     QuestModule,
