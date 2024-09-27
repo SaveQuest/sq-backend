@@ -97,11 +97,14 @@ class APIRequester {
    * @example
    * const response = await apiRequester.requestCode("+821012345678");
    * console.log(response);
+   * @data
    * // {
    * //  "phoneNumber": "01012345678",
    * //  "uuid": "ac2acd11-fb5e-4cf6-b523-d9160bfcf0a8",
    * //  "expiredAt": "2021-08-01T00:00:00.000Z"
    * // }
+   * @note
+   * 정상작동 확인함.
    */
   async requestCode(phoneNumber) {
     const response = await this.session.post(
@@ -119,7 +122,10 @@ class APIRequester {
    * @returns {Promise<Record<string, string>>} 응답 데이터
    * @example
    * const response = await apiRequester.authenticate("550e8400-e29b-41d4-a716-446655440000", "123456");
-   * console.log(response.data); // { "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." }
+   * console.log(response.data); // { "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." , "newUser": true}
+   * @note
+   * newUser로 신규 유저 여부를 확인할 수 있음. 신규 유저인 경우, user/profile로 이름 수정하기
+   * ,서버에서는 이름이 랜덤생성되므로 가입시에 입력받았던 이름으로 바꿔줘야함.
    */
   async authenticate(requestUUID, code) {
     const response = await this.session.post(
@@ -142,6 +148,8 @@ class APIRequester {
    * //  "points": 0,
    * //  "notificationCount": 0
    * // }
+   * @note
+   * 정상작동 확인함. 홈 화면에서 요청하는 내용임.
    */
   async getDSTHeader() {
     const response = await this.session.get('/user/dst/header');
@@ -155,6 +163,8 @@ class APIRequester {
    * const response = await apiRequester.getDSTHome();
    * console.log(response);
    * @data https://jsoneditoronline.org/#left=cloud.4d9be3f3c9b74f968d1de1321eaa036a
+   * @note
+   * 정상작동 확인함. element type 획인할 것. CAROUSEL_BASIC_CARD, CAROUSEL_PERCENT_CARD 차이 확인해야함.
    */
   async getDSTHome() {
     const response = await this.session.get('/user/dst/home');
@@ -167,7 +177,13 @@ class APIRequester {
    * @example
    * const response = await apiRequester.getDSTQuest();
    * console.log(response);
-   * @data https://jsoneditoronline.org/#left=cloud.afbb81175525497eba76226ed4c8748c
+   * @data
+   * {"quest": [
+   * {"id": "59195", "name": "편의점에서 총 5,000원 이하로 사용하기", "reward": "500", "percent": 43},
+   * {"id": "59195", "name": "편의점에서 총 5,000원 이하로 사용하기", "reward": "500", "percent": 43},
+   * ]}
+   * @note
+   * 정상작동 확인. 만약 카드거래내역이 업로드가 안되어있어 도전과제 자동생성이 안되면 리스트가 비어있을 수 있음.
    */
   async getDSTQuest() {
     const response = await this.session.get('/quest/dst');
@@ -227,6 +243,8 @@ class APIRequester {
    * console.log(response.data);
    * @data
    * {"challenges": [{"id": "1234", "name": "한달동안 평균 소비 금액 줄이기", "people": 100, "totalReward": 900, "entryFee": 100, "endsAt": "2021-08-01T00:00:00.000Z", joined: true}]}
+   * @note
+   * 정상작동 확인함.
    */
   async fetchPublicChallenge() {
     const response = await this.session.get('/challenge');
@@ -239,7 +257,10 @@ class APIRequester {
    * @example
    * const response = await apiRequester.fetchMyChallenge();
    * console.log(response.data);
-   * @data https://jsoneditoronline.org/#left=cloud.617a4bd7d66a4cf0988b965abbc7bfa3
+   * @data
+   * https://jsoneditoronline.org/#left=cloud.649a09ce9af7470b8441c983ebec4485
+   * @note
+   * 정상작동함. ranking 추가함.
    */
   async fetchDSTChallenge() {
     const response = await this.session.get('/challenge/dst');
@@ -256,6 +277,7 @@ class APIRequester {
    * @data
    * {
    *   "id": "1234",
+   *   "name": "챌린지 이름",
    *   "endsAt": "2021-08-01T00:00:00.000Z",
    *   "ranking": [
    *     {"rank": 1, "name": "주현명", "level": "998", "element": [
@@ -307,14 +329,14 @@ class APIRequester {
 
   /**
    * 카드거래내역을 업데이트합니다.
-   * @param {string} transactions - 카드거래내역 리스트
+   * @param {Record<string, any>[]} transactions - 카드거래내역 리스트
    * @returns {Promise<Record<string, Any>>}
    * @example
    * const response = await apiRequester.updateCardTransaction([]);
    * console.log(response.data);
    */
   async updateCardTransaction(transactions) {
-    const response = await this.session.post('/mileage/updateTransaction', { transactions: transactions });
+    const response = await this.session.post('/mileage/updateTransaction', transactions);
     return response.data;
   }
 
