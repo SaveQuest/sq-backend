@@ -8,6 +8,7 @@ import { InsufficientPointsException } from "@/modules/shop/exception/Insufficie
 import { User } from "@/modules/user/entities/user.entity";
 import { StaticFileService } from "@/modules/staticfile/service/staticfile.service";
 import { CreateProductDto } from "@/modules/shop/dto/createProduct.dto";
+import { InventoryItem } from "@/modules/inventory/entities/inventory.entity";
 
 @Injectable()
 export class ShopService {
@@ -16,6 +17,8 @@ export class ShopService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Product)
     private productRepository: Repository<Product>,
+    @InjectRepository(InventoryItem)
+    private inventoryItemRepository: Repository<InventoryItem>,
     private readonly staticFileService: StaticFileService,
   ) {}
 
@@ -70,10 +73,7 @@ export class ShopService {
   }
   
  
-  async purchaseProduct(userId: number, productId: number): Promise<{
-    success: boolean;
-    message: string;
-  }> {
+  async purchaseProduct(userId: number, productId: number): Promise<Record<string, any>> {
     const product = await this.productRepository.findOne({
       where: { id: productId },
     });
@@ -94,6 +94,44 @@ export class ShopService {
 
     user.points -= product.price;
     await this.userRepository.save(user);
+
+    if (product.category === 'randomBox') {
+      return await this.openRandomBox(userId, product);
+    }
     return { success: true, message: `${product.name} 구매 완료`};
+  }
+
+  async openRandomBox(userId: number, product: Product): Promise<Record<string, any>> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+    const totalProbability = product.randomBoxProbability.reduce((sum, p) => sum + Object.values(p)[0], 0);
+
+    const randomValue = Math.random() * totalProbability;
+
+    let cumulativeProbability = 0;
+    for (const probability of product.randomBoxProbability) {
+      const itemId = Object.keys(probability)[0];
+      cumulativeProbability += probability[itemId];
+      if (randomValue <= cumulativeProbability) {
+        if (itemId === 'points') {
+          const randomPoint = Math.floor(Math.random() * (2000 - 400 + 1)) + 400;
+          user.points += randomPoint;
+          await this.userRepository.save(user);
+          return { item: { name: `포인트 ${randomPoint}`, image: 'point.png' }};
+        }
+        const item = await this.inventoryItemRepository.findOne({ where: { id: itemId } });
+        user.inventory.push(item)
+        if (!item) {
+          throw new Error(`Item with id ${itemId} not found`);
+        }
+        return {
+          item: {
+            name: item.name,
+            image: await this.staticFileService.StaticFile(userId, `product/${item.imageId}.png`),
+          }
+        };
+      }
+    }
   }
 }

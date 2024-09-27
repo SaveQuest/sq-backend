@@ -5,9 +5,13 @@ import { ShopController } from './controller/shop.controller';
 import { Product } from './entity/product.entity';
 import { User } from '@/modules/user/entities/user.entity';
 import { StaticFileModule } from "@/modules/staticfile/staticfile.module";
+import { InventoryItem } from "@/modules/inventory/entities/inventory.entity";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Product, User]), StaticFileModule],
+  imports: [
+    TypeOrmModule.forFeature([Product, User, InventoryItem]),
+    StaticFileModule,
+  ],
   providers: [ShopService],
   controllers: [ShopController],
 })
