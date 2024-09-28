@@ -3,7 +3,6 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Challenge } from "../entity/challenge.entity";
 import { User } from "@/modules/user/entities/user.entity";
-import { MileageService } from "@/modules/mileage/service/mileage.service";
 import { NotFoundChallengesException } from "../exception/NotFoundChallengesException";
 import { InsufficientEntryFeeException } from "../exception/InsufficientEntryFeeException";
 import { NotFinishedChallengeException } from "../exception/NotFinishedChallengeException";
@@ -32,6 +31,7 @@ export class ChallengeService {
     }
 
     const challenge = this.challengeRepository.create({
+      joinCode: "TESTCODE",
       name: createChallengeDto.name,
       entryFee: createChallengeDto.entryFee,
       prize: createChallengeDto.prize,
@@ -39,6 +39,7 @@ export class ChallengeService {
       isFinished: false,
       usage: {},
       topic: createChallengeDto.topic,
+      isPublic: createChallengeDto.isPublic,
     });
     await this.challengeRepository.save(challenge);
     await this.taskSchedulerService.registerNewTask(
@@ -55,7 +56,7 @@ export class ChallengeService {
       name: challenge.name,
       people: Object.keys(challenge.usage).length,
       totalReward: challenge.prize,
-      endsAt: challenge.endDate.toLocaleDateString(),
+      endsAt: `${challenge.endDate.getMonth()}. ${challenge.endDate.getDay()}`,
       entryFee: challenge.entryFee,
       joined: Object.keys(challenge.usage).includes(userId.toString()),
     }));
@@ -97,6 +98,9 @@ export class ChallengeService {
 
   async getDst(userId: number): Promise<any> {
     const joinedChallenge = await this.getJoinedChallenge(userId);
+    if (!joinedChallenge) {
+      return {success: true, noElement: true}
+    }
     const user = await this.userRepository.findOne({ where: { id: userId } });
     const ranking = await this.getChallengeRanking(joinedChallenge.id)
       .then((rankings) => {rankings.slice(0, 2)});
@@ -137,6 +141,7 @@ export class ChallengeService {
     }
     return {
       id: userId,
+      noElement: false,
       element: {
         questInfo: questInfoUI,
         ranking: ranking,

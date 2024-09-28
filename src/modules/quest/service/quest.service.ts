@@ -37,12 +37,9 @@ export class QuestService {
                 generatedQuests: true,
             }
         });
-        if (user.generatedQuests.length === 0) {
-            return []
-        }
         if (this.isOverOneWeekFromToday(user.lastQuestGeneratedAt)) {
             if (user.quests.length > 0) {
-                    await this.rewardDailyQuest(user);
+                await this.rewardDailyQuest(user);
             }
             const newGeneratedQuest = await this.analyzerService.createQuest(userId);
             return newGeneratedQuest.map(quest => ({
@@ -53,6 +50,7 @@ export class QuestService {
                 id: quest.id, name: quest.name, reward: quest.reward, percent: quest.totalUsage / quest.limitUsage * 100
             }));
         }
+        return []
     }
 
     async rewardDailyQuest(user: User): Promise<void> {

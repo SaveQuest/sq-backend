@@ -1,6 +1,5 @@
-// quest.controller.ts
 import { Controller, Post, Param, Get, Request, Body } from "@nestjs/common";
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ChallengeService } from "@/modules/challenge/service/challenge.service";
 import { IncomingMessage } from 'http';
 import { CreateChallengeDto } from "@/modules/challenge/dto/CreateChallenge.dto";
@@ -57,6 +56,27 @@ export class ChallengeController {
     })
     async getChallengeDetails(@Param('id') challengeId: string): Promise<any> {
         return this.challengeService.getChallengeDetails(challengeId);
+    }
+
+    @Get('dst/header')
+    async getChallengeHeaderDST(@Request() req: IncomingMessage): Promise<any> {
+        return {
+            "id": "userId",
+            "element": [
+                {
+                    "name": "진행중인 챌린지 수",
+                    "value": "21"
+                },
+                {
+                    "name": "챌린지 플레이어",
+                    "value": "42,310"
+                },
+                {
+                    "name": "얻을 수 있는 포인트",
+                    "value": " +5,600"
+                }
+            ]
+        }
     }
 
 

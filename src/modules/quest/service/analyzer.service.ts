@@ -64,6 +64,7 @@ export class TransactionAnalysisService {
     const onlineShoppingKeywords = ['쿠팡', '11번가', 'g마켓', '옥션', '티몬', '위메프'];
     return onlineShoppingKeywords.some(keyword => merchantName.toLowerCase().includes(keyword));
   }
+  
   async calculateUsage(transactions: Mileage[]): Promise<{
     categoryStore: Record<string, number>, merchantStore: Record<string, number>
   }> {

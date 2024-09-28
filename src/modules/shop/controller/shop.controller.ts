@@ -1,6 +1,6 @@
 import { Controller, Post, Get, Param, Body, Query, Request } from "@nestjs/common";
 import { ShopService } from '@/modules/shop/service/shop.service';
-import { Product, ProductCategory } from "@/modules/shop/entity/product.entity";
+import { ProductCategory } from "@/modules/shop/entity/product.entity";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { IncomingMessage } from "http";
 import { CreateProductDto } from "@/modules/shop/dto/createProduct.dto";
