@@ -117,16 +117,16 @@ export class UserService {
         const equippedPet = userInventory.find(i => i.isEquipped && i.itemType === "pet");
         const equippedTag = userInventory.find(i => i.isEquipped && i.itemType === "tag");
         return {
-            character: equippedCharacter ? {
-                id: equippedCharacter.id,
-                name: equippedCharacter.name,
-                imageUrl: await this.staticFileService.StaticFile(userId, equippedCharacter.imageId)
-            } : null,
-            pet: equippedPet ? {
-                id: equippedPet.id,
-                name: equippedPet.name,
-                imageUrl: await this.staticFileService.StaticFile(userId, equippedPet.imageId)
-            } : null,
+            character: {
+                id: 'sex',
+                name: '검둥이',
+                imageUrl: await this.staticFileService.StaticFile(userId, '/productImage/green.png')
+            },
+            pet: {
+                id: 'sex2',
+                name: '푸바오',
+                imageUrl: await this.staticFileService.StaticFile(userId, '/pet/panda.png')
+            },
             tag: equippedTag ? {
                 id: equippedTag.id,
                 name: equippedTag.name,
@@ -258,10 +258,15 @@ export class UserService {
     ) {
         const user = await this.userRepository.findOne({where: {id: userId}, relations: ["inventory"]});
         const inventoryItems = user.inventory.filter(i => i.itemType === category);
-        return inventoryItems.map(async item => ({
-            id: item.id, name: item.name, isEquipped: item.isEquipped,
-            imageUrl: await this.staticFileService.StaticFile(userId, item.imageId),
-        }));
+        // return inventoryItems.map(async item => ({
+        //     id: item.id, name: item.name, isEquipped: item.isEquipped,
+        //     imageUrl: await this.staticFileService.StaticFile(userId, item.imageId),
+        // }));
+        return [
+            {id: "tag1", name: "절약 초보자", isEquipped: true, imageUrl: await this.staticFileService.StaticFile(userId, "/productPreview/black.png")},
+            {id: "tag1", name: "절약 초보자", isEquipped: false, imageUrl: await this.staticFileService.StaticFile(userId, "/productPreview/black.png")},
+            {id: "tag1", name: "절약 초보자", isEquipped: false, imageUrl: await this.staticFileService.StaticFile(userId, "/productPreview/black.png")},
+        ]
     }
 
     async equipItem(userId: number, itemId: string) {

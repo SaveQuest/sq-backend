@@ -537,6 +537,11 @@ class APIRequester {
     return response.data;
   }
 
+  async fetchUserRoom() {
+    const response = await this.session.get('/user/room');
+    return response.data;
+  }
+
 }
 
 const requester = new APIRequester('development', false);

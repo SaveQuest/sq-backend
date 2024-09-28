@@ -15,7 +15,6 @@ export class MileageService {
 
         @InjectRepository(Mileage)
         private readonly mileageRepository: Repository<Mileage>,
-
         private readonly analyzerService: TransactionAnalysisService,
     ) {}
 

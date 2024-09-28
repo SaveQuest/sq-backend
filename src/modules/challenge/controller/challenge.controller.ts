@@ -65,15 +65,15 @@ export class ChallengeController {
             "element": [
                 {
                     "name": "진행중인 챌린지 수",
-                    "value": "21"
+                    "value": "4"
                 },
                 {
                     "name": "챌린지 플레이어",
-                    "value": "42,310"
+                    "value": "+23명"
                 },
                 {
                     "name": "얻을 수 있는 포인트",
-                    "value": " +5,600"
+                    "value": " +22,000"
                 }
             ]
         }

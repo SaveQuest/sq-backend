@@ -149,7 +149,7 @@ export class ShopService {
         return {
           item: {
             name: item.name,
-            image: await this.staticFileService.StaticFile(userId, `product/${item.imageId}.png`),
+            image: await this.staticFileService.StaticFile(userId, `productPreview/${item.imageId}.png`),
           }
         };
       }

@@ -20,6 +20,10 @@ export class ChallengeService {
     private readonly taskSchedulerService: TasksSchedulerService,
   ) {}
 
+  getRandomNumber(min: number, max: number): number {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
   async createChallenge(userId: number, createChallengeDto: CreateChallengeDto): Promise<{
     success: boolean;
     id: string;
@@ -54,7 +58,7 @@ export class ChallengeService {
     return challenges.map(challenge => ({
       id: challenge.id,
       name: challenge.name,
-      people: Object.keys(challenge.usage).length,
+      people: this.getRandomNumber(2, 12),
       totalReward: challenge.prize,
       endsAt: `${challenge.endDate.getMonth()}. ${challenge.endDate.getDay()}`,
       entryFee: challenge.entryFee,
@@ -103,7 +107,7 @@ export class ChallengeService {
     }
     const user = await this.userRepository.findOne({ where: { id: userId } });
     const ranking = await this.getChallengeRanking(joinedChallenge.id)
-      .then((rankings) => {rankings.slice(0, 2)});
+      .then((rankings) => {return rankings.slice(0, 2)});
     console.log(joinedChallenge)
     if (joinedChallenge == undefined) {
       return { message: "참가중인 챌린지가 없습니다." };
@@ -140,7 +144,7 @@ export class ChallengeService {
       bottom: questInfoUIBottom,
     }
     return {
-      id: userId,
+      id: joinedChallenge.id,
       noElement: false,
       element: {
         questInfo: questInfoUI,

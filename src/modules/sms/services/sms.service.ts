@@ -17,7 +17,7 @@ export class SmsService {
     private readonly smsApiUrl = 'https://rest.nexmo.com/sms/json';
 
     async sendSMS(phoneNumber: string, message: string) {
-        if (env.NODE_ENV === 'production') {
+        if (env.NODE_ENV === 'development:no-drop-tables') {
             const parsedPhoneNumber = parsePhoneNumber(phoneNumber, 'KR');
             if (!parsedPhoneNumber.isValid()) {
                 throw new InvalidPhoneNumberError();

@@ -18,11 +18,46 @@ export class SeedingService implements OnApplicationBootstrap {
     ) {}
 
     async seed() {
-        
+        await this.setupChallenge()
     }
 
     async setupChallenge() {
-        
+        const frankChallenge = [this.challengeRepository.create(
+          {
+              joinCode: '51001',
+              name: "1주일 무지출 챌린지",
+              entryFee: 1000,
+              prize: 4500,
+              isFinished: false,
+              endDate: new Date('2024-10-25'),
+              usage: {
+                  '1': 1000,
+                  '2': 2000,
+              },
+              topic: "category:게임",
+              isPublic: true,
+          }
+        ),
+        this.challengeRepository.create(
+          {
+              joinCode: '51002',
+              name: "게임 현질 절약하기",
+              entryFee: 300,
+              prize: 6500,
+              isFinished: false,
+              endDate: new Date('2024-10-25'),
+              usage: {
+                  '1': 1000,
+                  '2': 2000,
+              },
+              topic: "category:게임",
+              isPublic: true,
+          }
+        ),
+        ]
+        for (const challenge of frankChallenge) {
+            await this.challengeRepository.save(challenge)
+        }
     }
 
     private check(logId: string) {
