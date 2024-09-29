@@ -159,7 +159,7 @@ export class ChallengeService {
       throw new NotFoundChallengesException();
     }
     const ranking = await this.getChallengeRanking(challenge.id)
-      .then((rankings) => {rankings.slice(0, 2)});
+      .then((rankings) => {return rankings.slice(0, 2)});
 
     return {
       id: challenge.id,
